@@ -334,7 +334,7 @@ namespace SentinelaRoku.SendClasses
             try
             {
                 //escreve uma string num arquivo, cria o arquivo se não existir
-                File.WriteAllText($@"{ConfigurationManager.AppSettings["Directory_TestIn"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffffff")}.txt", sendMessage);
+                File.WriteAllText($@"{ConfigurationManager.AppSettings["Directory_TestIn"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffffff")}.txt", sendMessage + Environment.NewLine);
 
                 using (var writeLog = new WriteLog())
                 {
