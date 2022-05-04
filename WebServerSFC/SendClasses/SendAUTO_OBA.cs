@@ -192,7 +192,7 @@ namespace SentinelaRoku.SendClasses
                     }
                     else
                     {
-                        SendMessageToTest($"1>>SERIALNO={SN},PNNAME=,#Wrong hostname!");
+                        SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }

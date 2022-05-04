@@ -162,14 +162,14 @@ namespace SentinelaRoku.SendClasses
                         {
                             resultTest = true;
 
-                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN},#OK,UNIT STATUS IS VALID";
+                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                         }
                         else if (resultCheckStatus.StatusCode == "1")   //check not OK
                         {
 
                             resultTest = false;
 
-                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN},#{CheckStatusErrorMessage}";
+                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{CheckStatusErrorMessage}";
                         }
 
                         SendMessageToTest(testAnswer);
@@ -178,7 +178,7 @@ namespace SentinelaRoku.SendClasses
                     }
                     else
                     {
-                        SendMessageToTest($"1>>SERIALNO={SN},PNNAME=,#Wrong hostname!");
+                        SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
 
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
