@@ -122,8 +122,6 @@ namespace SentinelaRoku.SendClasses
             /*--- Análise ---*/
             try
             {
-
-
                 if (Receive.Contains("1>>")) //Consulta no WebService
                 {
                     string message = Receive.Substring(3);
@@ -177,13 +175,13 @@ namespace SentinelaRoku.SendClasses
                         {
                             resultTest = true;
 
-                            testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                            testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                         }
                         else if (resultCheckStatus.StatusCode == "1")   //check not OK
                         {
                             resultTest = false;
 
-                            testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{CheckStatusErrorMessage}";
+                            testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{CheckStatusErrorMessage}";
                         }
 
                         SendMessageToTest(testAnswer);
@@ -192,7 +190,7 @@ namespace SentinelaRoku.SendClasses
                     }
                     else
                     {
-                        SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
+                        SendMessageToTest($"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
 
@@ -211,7 +209,7 @@ namespace SentinelaRoku.SendClasses
                     if (ResultTest == "PASS")
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";
+                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#OK,UNIT PASS!";
 
                         SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
@@ -238,7 +236,7 @@ namespace SentinelaRoku.SendClasses
                     else // Test result Fail
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"2>>SERIALNO={SN}#{ResultTest}";
+                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#{ResultTest}";
 
                         SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
@@ -304,11 +302,13 @@ namespace SentinelaRoku.SendClasses
             try
             {
                 //escreve uma string num arquivo, cria o arquivo se não existir
-                File.WriteAllText($@"{ConfigurationManager.AppSettings["Directory_TestIn"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffffff")}.txt", sendMessage + Environment.NewLine);
+                string[] messageForTest = { Environment.NewLine, sendMessage };
+
+                File.AppendAllLines($@"{ConfigurationManager.AppSettings["LogFileLASER"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt", messageForTest);
 
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"File sent for testing: {$@"{ConfigurationManager.AppSettings["Directory_TestIn"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffffff")}.txt"}");
+                    writeLog.WriteLogFile($"File sent for testing: {$@"{ConfigurationManager.AppSettings["LogFileLASER"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt"}");
                 }
             }
             catch (Exception ex)

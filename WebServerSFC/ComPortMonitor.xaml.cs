@@ -13,6 +13,8 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using System.Linq;
 using WebServerSFC.Classes;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace WebServerSFC
 {
@@ -30,14 +32,13 @@ namespace WebServerSFC
         public string dataToSend { get; set; }
         public string StationGroup { get; set; }
 
-        public string pathTestOut { get; set; }
-        private string pathTestIn { get; set; }
-
         private DataTable tableStation;
 
         DispatcherTimer timer = new DispatcherTimer(); //Exibe os 3 últimos resultados de teste
 
         private static FileSystemWatcher _monitorarLogOUT;
+
+        public List<DateTime> lastMessageTime;
 
 
         /*************************************************************************************************************************/
@@ -45,8 +46,6 @@ namespace WebServerSFC
         public ComPortMonitor()
         {
             InitializeComponent();
-
-            pathTestOut = ConfigurationManager.AppSettings["Directory_TestOut"];
 
             LoadDataTableHostnamesROKU();
 
@@ -103,21 +102,30 @@ namespace WebServerSFC
 
             if (MainWindow.TestModeControl)
             {
-                string[] files2 = Directory.GetFiles(pathTestOut, "*.txt");
+                string fileLogMonitor = string.Empty;
 
-                foreach (string file1 in files2)
+                if (Hostname.Contains("PT"))
                 {
-                    if (File.Exists(file1)) File.Delete(file1);
+                    fileLogMonitor = ConfigurationManager.AppSettings["LogFilePT"];
+                }
+                else if (Hostname.Contains("FT"))
+                {
+                    fileLogMonitor = ConfigurationManager.AppSettings["LogFileFT"];
+                }
+                else if (Hostname.Contains("RC"))
+                {
+                    fileLogMonitor = ConfigurationManager.AppSettings["LogFileRC"];
+                }
+                else if (Hostname.Contains("LASER"))
+                {
+                    fileLogMonitor = ConfigurationManager.AppSettings["LogFileLASER"];
+                }
+                else if (Hostname.Contains("OBA"))
+                {
+                    fileLogMonitor = ConfigurationManager.AppSettings["LogFileOBA"];
                 }
 
-
-                string[] file3 = Directory.GetFiles(ConfigurationManager.AppSettings["Directory_TestIn"], "*.txt");
-                foreach (string  fileIN in file3)
-                {
-                    if (File.Exists(fileIN)) File.Delete(fileIN);
-                }
-
-                MonitorarArquivos(pathTestOut, "*.txt", OnFileChanged);
+                MonitorarArquivos(fileLogMonitor, "*.txt", OnFileChanged);
 
                 if (!ExistExe)
                 {
@@ -282,13 +290,13 @@ namespace WebServerSFC
                 IncludeSubdirectories = true
             };
 
-            _monitorarLogOUT.Created += new FileSystemEventHandler(OnFileChanged);
-            //_monitorarLogOUT.Changed += OnFileChanged;
+            //_monitorarLogOUT.Created += new FileSystemEventHandler(OnFileChanged);
+            _monitorarLogOUT.Changed += OnFileChanged;
             //_monitorarLogOUT.Deleted += OnFileChanged;
             //_monitorarLogOUT.Renamed += OnFileRenamed;
 
             _monitorarLogOUT.EnableRaisingEvents = true;
-            Console.WriteLine($"Monitorando arquivos e: {filtro}");
+            //Console.WriteLine($"Monitorando arquivos e: {filtro}");
         }
 
         /*************************************************************************************************************************/
@@ -298,7 +306,7 @@ namespace WebServerSFC
         /*--- Verifica a mudança de um arquivo ---*/
         private void OnFileChanged(object sender, FileSystemEventArgs e)
         {
-            System.Threading.Thread.Sleep(800);
+            System.Threading.Thread.Sleep(150);
 
             using (var writeLog = new WriteLog())
             {
@@ -307,65 +315,96 @@ namespace WebServerSFC
 
             try
             {
-                string receivedData = File.ReadLines(e.FullPath).Skip(0).Take(1).First();
+                List<string> fileLog;
 
-                switch (StationGroup)
+                try
                 {
-                    case "PT":
-
-                        using (SendPT sendPT = new SendPT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                        {
-                            sendPT.messageAnalysis(receivedData);
-                        }
-
-                        break;
-
-                    case "FT":
-
-                        using (SendFT sendFT = new SendFT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                        {
-                            sendFT.messageAnalysis(receivedData);
-                        }
-
-                        break;
-
-                    case "RC":
-
-                        using (SendRC sendRC = new SendRC(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                        {
-                            sendRC.messageAnalysis(receivedData);
-                        }
-
-                        break;
-
-                    case "LASER":
-
-                        using (SendLASER sendLASER = new SendLASER(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                        {
-                            sendLASER.messageAnalysis(receivedData);
-                        }
-
-                        break;
-
-                    case "AUTO_OBA":
-
-                        using (SendAUTO_OBA sendAUTO_OBA = new SendAUTO_OBA(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                        {
-                            sendAUTO_OBA.messageAnalysis(receivedData);
-                        }
-
-                        break;
-
-                    default:
-                        MessageBox.Show($"Unidentified station {StationGroup}.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        using (var writeLog = new WriteLog())
-                        {
-                            writeLog.WriteLogFile($"Unidentified station {StationGroup}.");
-                        }
-                        break;
+                    fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                    }
+                    catch (Exception)
+                    {
+                        System.Threading.Thread.Sleep(1000);
+                        fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                    }
                 }
 
-                if (File.Exists(e.FullPath)) File.Delete(e.FullPath);
+                string lastMessage = string.Empty;
+
+                if(fileLog.Count > 0) lastMessage = fileLog[fileLog.Count - 1];
+
+                if (lastMessage.Contains("flag=2;UI->SMO:") && lastMessage.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
+                {
+                    DateTime timeMessage = DateTime.ParseExact(lastMessage.Split(' ')[0], "HH:mm:ss:fff", CultureInfo.InvariantCulture);
+
+                    if ((lastMessageTime == null) || (DateTime.Compare(timeMessage, lastMessageTime[lastMessageTime.Count - 1]) == 1) )
+                    {
+                        string receivedData = lastMessage.Split(':')[4];
+
+                        switch (StationGroup)
+                        {
+                            case "PT":
+
+                                using (SendPT sendPT = new SendPT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                {
+                                    sendPT.messageAnalysis(receivedData);
+                                }
+
+                                break;
+
+                            case "FT":
+
+                                using (SendFT sendFT = new SendFT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                {
+                                    sendFT.messageAnalysis(receivedData);
+                                }
+
+                                break;
+
+                            case "RC":
+
+                                using (SendRC sendRC = new SendRC(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                {
+                                    sendRC.messageAnalysis(receivedData);
+                                }
+
+                                break;
+
+                            case "LASER":
+
+                                using (SendLASER sendLASER = new SendLASER(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                {
+                                    sendLASER.messageAnalysis(receivedData);
+                                }
+
+                                break;
+
+                            case "AUTO_OBA":
+
+                                using (SendAUTO_OBA sendAUTO_OBA = new SendAUTO_OBA(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                {
+                                    sendAUTO_OBA.messageAnalysis(receivedData);
+                                }
+
+                                break;
+
+                            default:
+                                MessageBox.Show($"Unidentified station {StationGroup}.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                using (var writeLog = new WriteLog())
+                                {
+                                    writeLog.WriteLogFile($"Unidentified station {StationGroup}.");
+                                }
+                                break;
+                        }
+
+                    }
+                }
 
             }
             catch (Exception ex)
@@ -377,7 +416,6 @@ namespace WebServerSFC
 
                 MessageBox.Show($"ComPortMonitor.cs Flag-OnFileChanged: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                throw;
             }
 
         }
