@@ -306,7 +306,7 @@ namespace WebServerSFC
         /*--- Verifica a mudança de um arquivo ---*/
         private void OnFileChanged(object sender, FileSystemEventArgs e)
         {
-            System.Threading.Thread.Sleep(150);
+            _monitorarLogOUT.EnableRaisingEvents = false;
 
             using (var writeLog = new WriteLog())
             {
@@ -315,37 +315,56 @@ namespace WebServerSFC
 
             try
             {
-                List<string> fileLog;
+                //List<string> fileLog = new List<string>();
+                string fileLog = string.Empty;
 
                 try
                 {
-                    fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                    fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
+                    //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
                 }
                 catch (Exception)
                 {
                     try
                     {
-                        System.Threading.Thread.Sleep(1000);
-                        fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                        System.Threading.Thread.Sleep(200);
+                        fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
+                        //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
                     }
                     catch (Exception)
                     {
-                        System.Threading.Thread.Sleep(1000);
-                        fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                        try
+                        {
+                            System.Threading.Thread.Sleep(200);
+                            fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
+                            //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                        }
+                        catch (Exception ex)
+                        {
+
+                            MessageBox.Show($"ComPortMonitor Flag- Leitura do Log: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
                     }
                 }
 
-                string lastMessage = string.Empty;
+                //string lastMessage = string.Empty;
 
-                if(fileLog.Count > 0) lastMessage = fileLog[fileLog.Count - 1];
+                //if ((fileLog.Count > 0) && (fileLog[fileLog.Count - 1] != string.Empty))
+                //{
+                //    lastMessage = fileLog[fileLog.Count - 1];
+                //}
+                //else if ((fileLog.Count > 0) && (fileLog[fileLog.Count - 2] != string.Empty))
+                //{
+                //    lastMessage = fileLog[fileLog.Count - 2];
+                //}
 
-                if (lastMessage.Contains("flag=2;UI->SMO:") && lastMessage.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
+                if (fileLog.Contains("flag=2;UI->SMO:") && fileLog.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
                 {
-                    DateTime timeMessage = DateTime.ParseExact(lastMessage.Split(' ')[0], "HH:mm:ss:fff", CultureInfo.InvariantCulture);
+                    DateTime timeMessage = DateTime.ParseExact(fileLog.Split(' ')[0], "HH:mm:ss:fff", CultureInfo.InvariantCulture);
 
                     if ((lastMessageTime == null) || (DateTime.Compare(timeMessage, lastMessageTime[lastMessageTime.Count - 1]) == 1) )
                     {
-                        string receivedData = lastMessage.Split(':')[4];
+                        string receivedData = fileLog.Split(':')[4];
 
                         switch (StationGroup)
                         {
@@ -403,9 +422,18 @@ namespace WebServerSFC
                                 break;
                         }
 
+                        using (var writeLog = new WriteLog())
+                        {
+                            writeLog.WriteLogFile($"Mensagem enviada para verificação: {receivedData}");
+                        }
+
                     }
                 }
 
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"Mensagem recebidado do teste: {fileLog}");
+                }
             }
             catch (Exception ex)
             {
@@ -418,6 +446,7 @@ namespace WebServerSFC
 
             }
 
+            _monitorarLogOUT.EnableRaisingEvents = true;
         }
 
         /*************************************************************************************************************************/

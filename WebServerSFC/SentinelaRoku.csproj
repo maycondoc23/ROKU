@@ -133,11 +133,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AlertMessage.xaml.cs">
+      <DependentUpon>AlertMessage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SendClasses\SendAUTO_OBA.cs" />
     <Compile Include="SendClasses\SendFT.cs" />
     <Compile Include="SendClasses\SendLASER.cs" />
     <Compile Include="SendClasses\SendPT.cs" />
     <Compile Include="SendClasses\SendRC.cs" />
+    <Page Include="AlertMessage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ComPortMonitor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -257,6 +264,11 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="RokuSFC.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="LogWebService\LogWebService.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets" Condition="Exists('..\packages\MaterialDesignThemes.4.0.0\build\MaterialDesignThemes.targets')" />

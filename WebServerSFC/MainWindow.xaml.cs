@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SentinelaRoku;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
@@ -27,7 +28,6 @@ namespace WebServerSFC
 
         public static List<string> LastSerial = new List<string>();
 
-
         /*************************************************************************************************************************/
         /*--- Inicialização ---*/
         public MainWindow()
@@ -47,13 +47,19 @@ namespace WebServerSFC
 
             InitializeComponent();
 
+            if(File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
+            {
+                File.Delete($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
+            }
+                
+
             try
             {
                 KillProcess();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"MainWindow.xaml.cs Flag-1: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             DispatcherTimer timer = new DispatcherTimer();
@@ -88,6 +94,26 @@ namespace WebServerSFC
                             LastSerial.Add(data[data.Length - 3]);
                         }
                     }
+                }
+            }
+
+            if (File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
+            {
+                try
+                {
+                    string messageWS = File.ReadAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
+
+                    AlertMessage alertMessage = new AlertMessage();
+                    alertMessage.InsertMessage(messageWS);
+                    alertMessage.ShowDialog();
+
+                    if (File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
+                        File.Delete($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"MainWindow.xaml.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                    throw;
                 }
             }
         }
@@ -289,7 +315,7 @@ namespace WebServerSFC
                 catch (Exception ex)
                 {
 
-                    MessageBox.Show(ex.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show($"MainWindow.xaml.cs Flag-3: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
 
@@ -419,7 +445,7 @@ namespace WebServerSFC
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"MainWindow.xaml.cs Flag-395: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"MainWindow.xaml.cs Flag-4: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
 

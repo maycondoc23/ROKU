@@ -146,10 +146,8 @@ namespace SentinelaRoku.SendClasses
                         /*--- Consulta no WebService ---*/
                         var webservice = new WebServiceMethods();
 
-                        var resultCheckStatus = webservice.SFIS_CHECK_STATUS(SN, GroupName);
                         var resultGetData = webservice.SFIS_GET_DATA(SN);
 
-                        string CheckStatusErrorMessage = resultCheckStatus.ErrorMessage;
                         string GetDataErrorMessage = resultGetData.ErrorMessage;
 
                         string PN = resultGetData.Configuration.Sku;
@@ -158,18 +156,18 @@ namespace SentinelaRoku.SendClasses
 
 
                         /*--- Responde para o teste ---*/
-                        if (resultCheckStatus.StatusCode == "0") //check OK
+                        if (resultGetData.StatusCode == "0") //check OK
                         {
                             resultTest = true;
 
                             testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                         }
-                        else if (resultCheckStatus.StatusCode == "1")   //check not OK
+                        else if (resultGetData.StatusCode == "1")   //check not OK
                         {
 
                             resultTest = false;
 
-                            testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#{CheckStatusErrorMessage}";
+                            testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
                         }
 
                         SendMessageToTest(testAnswer);
@@ -218,7 +216,7 @@ namespace SentinelaRoku.SendClasses
 
                         if (send_CSN_CESN.StatusCode == "1")
                         {
-                            MessageBox.Show(send_CSN_CESN.ErrorMessage, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
 
                             using (var writeLog = new WriteLog())
                             {
@@ -234,7 +232,7 @@ namespace SentinelaRoku.SendClasses
 
                         if (resultLogout.StatusCode == "1")
                         {
-                            MessageBox.Show(resultLogout.ErrorMessage, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
                             using (var writeLog = new WriteLog())
                             {
@@ -265,7 +263,7 @@ namespace SentinelaRoku.SendClasses
 
                         if (send_CSN_CESN.StatusCode == "1")
                         {
-                            MessageBox.Show(send_CSN_CESN.ErrorMessage, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
 
                             using (var writeLog = new WriteLog())
                             {
@@ -289,7 +287,7 @@ namespace SentinelaRoku.SendClasses
 
                         if (resultLogout.StatusCode == "1")
                         {
-                            MessageBox.Show(resultLogout.ErrorMessage, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
                             using (var writeLog = new WriteLog())
                             {
@@ -334,9 +332,9 @@ namespace SentinelaRoku.SendClasses
             try
             {
                 //escreve uma string num arquivo, cria o arquivo se não existir
-                string[] messageForTest = { Environment.NewLine, sendMessage };
+                //string[] messageForTest = { sendMessage };
 
-                File.AppendAllLines($@"{ConfigurationManager.AppSettings["LogFilePT"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt", messageForTest);
+                File.AppendAllText($@"{ConfigurationManager.AppSettings["LogFilePT"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt", string.Join(Environment.NewLine, sendMessage));
 
                 using (var writeLog = new WriteLog())
                 {
