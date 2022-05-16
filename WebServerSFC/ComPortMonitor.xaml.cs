@@ -33,6 +33,7 @@ namespace WebServerSFC
         public string StationGroup { get; set; }
 
         private DataTable tableStation;
+        private DataTable tableErrorCode;
 
         DispatcherTimer timer = new DispatcherTimer(); //Exibe os 3 últimos resultados de teste
 
@@ -55,6 +56,8 @@ namespace WebServerSFC
             lbStation.Text = Hostname;
 
             StationGroup = consultHostName[0]["SFC_Station"].ToString();
+
+            LoadDataTableErrorCode(StationGroup);
 
             if (MainWindow.TestModeControl)
             {
@@ -79,8 +82,6 @@ namespace WebServerSFC
             this.Title = $"SENTINELA ROKU { Assembly.GetExecutingAssembly().GetName().Version}";
 
             var desktopWorkingArea = SystemParameters.WorkArea;
-
-
 
             /*--- Exibe os 3 últimos resultados de teste ---*/
             timer.Tick += TimerTick;
@@ -166,7 +167,6 @@ namespace WebServerSFC
                     aProcess.Kill();
                 }
             }
-
         }
 
         /*************************************************************************************************************************/
@@ -193,8 +193,45 @@ namespace WebServerSFC
                 }
                 catch (Exception ex)
                 {
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-1: {ex.Message}");
+                    }
+                    MessageBox.Show($"ComPortMonitor.xaml.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
 
-                    MessageBox.Show(ex.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        /*************************************************************************************************************************/
+
+
+        /*************************************************************************************************************************/
+        /*--- Lê o arquivo ErrorCode.xlsx para a DataTable tableErrorCode ---*/
+        private void LoadDataTableErrorCode(string groupName)
+        {
+            tableErrorCode = new DataTable();
+
+            string fileName = $@"{Directory.GetCurrentDirectory()}\TableErrorCodeROKU\ErrorCode.xlsx";
+
+            using (OleDbConnection conn = this.returnConnection(fileName))
+            {
+                try
+                {
+                    conn.Open();
+                    // retrieve the data using data adapter
+                    OleDbDataAdapter sheetAdapter = new OleDbDataAdapter($"select * from [{groupName}$]", conn);
+                    sheetAdapter.Fill(tableErrorCode);
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-2: {ex.Message}");
+                    }
+                    MessageBox.Show($"ComPortMonitor.xaml.cs Flag-2: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
 
@@ -315,48 +352,36 @@ namespace WebServerSFC
 
             try
             {
-                //List<string> fileLog = new List<string>();
                 string fileLog = string.Empty;
 
                 try
                 {
-                    fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                    //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                    fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
                 }
                 catch (Exception)
                 {
                     try
                     {
                         System.Threading.Thread.Sleep(200);
-                        fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                        //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                        fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
                     }
                     catch (Exception)
                     {
                         try
                         {
                             System.Threading.Thread.Sleep(200);
-                            fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                            //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                            fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
                         }
                         catch (Exception ex)
                         {
-
-                            MessageBox.Show($"ComPortMonitor Flag- Leitura do Log: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-3: {ex.Message}");
+                            }
+                            MessageBox.Show($"ComPortMonitor.xaml.cs Flag-3: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                 }
-
-                //string lastMessage = string.Empty;
-
-                //if ((fileLog.Count > 0) && (fileLog[fileLog.Count - 1] != string.Empty))
-                //{
-                //    lastMessage = fileLog[fileLog.Count - 1];
-                //}
-                //else if ((fileLog.Count > 0) && (fileLog[fileLog.Count - 2] != string.Empty))
-                //{
-                //    lastMessage = fileLog[fileLog.Count - 2];
-                //}
 
                 if (fileLog.Contains("flag=2;UI->SMO:") && fileLog.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
                 {
@@ -370,7 +395,7 @@ namespace WebServerSFC
                         {
                             case "PT":
 
-                                using (SendPT sendPT = new SendPT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                using (SendPT sendPT = new SendPT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
                                 {
                                     sendPT.messageAnalysis(receivedData);
                                 }
@@ -379,7 +404,7 @@ namespace WebServerSFC
 
                             case "FT":
 
-                                using (SendFT sendFT = new SendFT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                using (SendFT sendFT = new SendFT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
                                 {
                                     sendFT.messageAnalysis(receivedData);
                                 }
@@ -388,7 +413,7 @@ namespace WebServerSFC
 
                             case "RC":
 
-                                using (SendRC sendRC = new SendRC(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                using (SendRC sendRC = new SendRC(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
                                 {
                                     sendRC.messageAnalysis(receivedData);
                                 }
@@ -397,7 +422,7 @@ namespace WebServerSFC
 
                             case "LASER":
 
-                                using (SendLASER sendLASER = new SendLASER(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                using (SendLASER sendLASER = new SendLASER(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
                                 {
                                     sendLASER.messageAnalysis(receivedData);
                                 }
@@ -406,7 +431,7 @@ namespace WebServerSFC
 
                             case "AUTO_OBA":
 
-                                using (SendAUTO_OBA sendAUTO_OBA = new SendAUTO_OBA(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
+                                using (SendAUTO_OBA sendAUTO_OBA = new SendAUTO_OBA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
                                 {
                                     sendAUTO_OBA.messageAnalysis(receivedData);
                                 }
@@ -439,10 +464,10 @@ namespace WebServerSFC
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"ComPortMonitor.cs Flag-OnFileChanged: {ex.Message}");
+                    writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-4: {ex.Message}");
                 }
 
-                MessageBox.Show($"ComPortMonitor.cs Flag-OnFileChanged: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"ComPortMonitor.xaml.cs Flag-4: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
 
             }
 

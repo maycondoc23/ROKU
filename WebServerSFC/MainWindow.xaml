@@ -57,7 +57,7 @@
             TextWrapping="Wrap"
             MaxWidth="400"
             materialDesign:HintAssist.Hint="Jig            "
-            IsEnabled="{Binding IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}" Margin="305,71,277,0" FontSize="16" Height="64" TextAlignment="Center" TextChanged="txtJiga_TextChanged" KeyDown="txtJiga_KeyDown"/>
+            IsEnabled="{Binding IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}" Margin="305,71,277,0" FontSize="16" Height="64" TextAlignment="Center" KeyDown="txtJiga_KeyDown"/>
         <TextBlock
             FontSize="46"
             Text="SENTINELA ROKU"

@@ -47,9 +47,9 @@ namespace WebServerSFC
 
             InitializeComponent();
 
-            if(File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
+            if(System.IO.File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
             {
-                File.Delete($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
+                System.IO.File.Delete($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
             }
                 
 
@@ -59,6 +59,11 @@ namespace WebServerSFC
             }
             catch (Exception ex)
             {
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"MainWindow.xaml.cs Flag-1: {ex.Message}");
+                }
+
                 MessageBox.Show($"MainWindow.xaml.cs Flag-1: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
@@ -97,23 +102,26 @@ namespace WebServerSFC
                 }
             }
 
-            if (File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
+            if (System.IO.File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
             {
                 try
                 {
-                    string messageWS = File.ReadAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
+                    string messageWS = System.IO.File.ReadAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
 
                     AlertMessage alertMessage = new AlertMessage();
                     alertMessage.InsertMessage(messageWS);
                     alertMessage.ShowDialog();
 
-                    if (File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
-                        File.Delete($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
+                    if (System.IO.File.Exists($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt"))
+                        System.IO.File.Delete($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
                 }
                 catch (Exception ex)
                 {
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"MainWindow.xaml.cs Flag-2: {ex.Message}");
+                    }
                     MessageBox.Show($"MainWindow.xaml.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-                    throw;
                 }
             }
         }
@@ -146,46 +154,6 @@ namespace WebServerSFC
                 chkOffline.IsChecked = false;
                 TestModeControl = true;
             }
-        }
-
-        /*************************************************************************************************************************/
-
-
-        /*************************************************************************************************************************/
-        /*--- Descrição ---*/
-        private void txtJiga_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            //if (txtJiga.Text.Length >= 6 )
-            //{
-            //    if (txtJiga.Text.Contains("M_FT") || txtJiga.Text.Contains("M_PT") || txtJiga.Text.Contains("M_RC") || txtJiga.Text.Contains("M_LASER") || txtJiga.Text.Contains("AUTO_OBA"))
-            //    {
-            //        if (txtJiga.Text.Contains("M_FT")) { StationGroup = "FT"; }
-            //        else if (txtJiga.Text.Contains("M_PT")) { StationGroup = "PT"; }
-            //        else if (txtJiga.Text.Contains("M_RC")) { StationGroup = "RC"; }
-            //        else if (txtJiga.Text.Contains("M_LASER")) { StationGroup = "LASER"; }
-            //        else if (txtJiga.Text.Contains("AUTO_OBA")) { StationGroup = "AUTO_OBA"; }
-
-            //        using (var writeLog = new WriteLog())
-            //        {
-            //            writeLog.WriteLogFile($@"Validated hostname");
-            //        }
-            //        txtJiga.IsEnabled = false;
-            //        txtUser.Visibility = Visibility;
-            //        txtUser.Focus();
-            //    }
-            //    else
-            //    {
-            //        using (var writeLog = new WriteLog())
-            //        {
-            //            writeLog.WriteLogFile($@"Invalid hostname");
-            //        }
-            //        MessageBox.Show("HostName invalido!", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
-            //        txtJiga.Clear();
-            //        txtJiga.Focus();
-            //        return;
-            //    }
-            //}
-
         }
 
         /*************************************************************************************************************************/
@@ -314,7 +282,10 @@ namespace WebServerSFC
                 }
                 catch (Exception ex)
                 {
-
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"MainWindow.xaml.cs Flag-3: {ex.Message}");
+                    }
                     MessageBox.Show($"MainWindow.xaml.cs Flag-3: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
@@ -445,6 +416,10 @@ namespace WebServerSFC
             }
             catch (Exception ex)
             {
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"MainWindow.xaml.cs Flag-4: {ex.Message}");
+                }
                 MessageBox.Show($"MainWindow.xaml.cs Flag-4: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
