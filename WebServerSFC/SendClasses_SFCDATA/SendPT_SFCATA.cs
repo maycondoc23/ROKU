@@ -1,18 +1,16 @@
-﻿using SentinelaRoku.ServiceReferenceTEST;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.OleDb;
-using System.IO;
-using System.IO.Ports;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
-using WebServerSFC;
 using WebServerSFC.Classes;
 
-namespace SentinelaRoku.SendClasses
+namespace SentinelaRoku.SendClasses_SFCDATA
 {
-    class SendPT : IDisposable
+    class SendPT_SFCATA: IDisposable
     {
         private DataTable tableErrorCode;
         private DataTable tableStation;
@@ -22,9 +20,10 @@ namespace SentinelaRoku.SendClasses
         private string hostName;
         private string groupName;
 
+
         /*************************************************************************************************************************/
         /*--- Construtor ---*/
-        public SendPT(string id, string host, string group, DataTable stations, DataTable errorCodes)
+        public SendPT_SFCATA(string id, string host, string group, DataTable stations, DataTable errorCodes)
         {
             operatorID = id;
             productLine = ConfigurationManager.AppSettings["PRODUCT_LINE"];
@@ -45,7 +44,6 @@ namespace SentinelaRoku.SendClasses
 
             bool resultTest = false;
             string testAnswer = string.Empty;
-
 
             /*--- Análise ---*/
             try
@@ -88,17 +86,17 @@ namespace SentinelaRoku.SendClasses
                         //{
                         //    resultTest = true;
 
-                        //    testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                        //    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                         //}
                         //else if (resultGetData.StatusCode == "1")   //check not OK
                         //{
 
                         //    resultTest = false;
 
-                        //    testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
+                        //    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
                         //}
 
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                        testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
 
                         SendMessageToTest(testAnswer);
 
@@ -106,7 +104,7 @@ namespace SentinelaRoku.SendClasses
                     }
                     else
                     {
-                        SendMessageToTest($"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
+                        SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
 
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
@@ -127,7 +125,7 @@ namespace SentinelaRoku.SendClasses
                     if (ResultTest == "PASS")
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#OK,UNIT PASS!";
+                        testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";
 
                         SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
@@ -174,7 +172,7 @@ namespace SentinelaRoku.SendClasses
                     else // Test result Fail
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#{ResultTest}";
+                        testAnswer = $"2>>SERIALNO={SN}#{ResultTest}";
 
                         SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
@@ -233,9 +231,9 @@ namespace SentinelaRoku.SendClasses
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendPT.cs Flag-1: {ex.Message}");
+                    writeLog.WriteLogFile($"SendPT_SFCATA.cs Flag-1: {ex.Message}");
                 }
-                MessageBox.Show($"SendPT.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"SendPT_SFCATA.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                 throw;
             }
 
@@ -266,25 +264,23 @@ namespace SentinelaRoku.SendClasses
             {
                 //escreve uma string num arquivo, cria o arquivo se não existir
 
-                string[] mensagem = { sendMessage };
-                System.IO.File.AppendAllLines($@"{ConfigurationManager.AppSettings["LogFilePT"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt", mensagem, System.Text.Encoding.ASCII);
-
+                System.IO.File.WriteAllText($@"{ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}.txt", sendMessage);
 
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"File sent for testing: {$@"{ConfigurationManager.AppSettings["LogFilePT"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt"}");
+                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}.txt");
                 }
             }
             catch (Exception ex)
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendPT.cs Flag-2: {ex.Message}");
+                    writeLog.WriteLogFile($"SendPT_SFCATA.cs Flag-2: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendPT.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendPT_SFCATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
-            }            
+            }
 
             /*-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -300,7 +296,7 @@ namespace SentinelaRoku.SendClasses
 
         /*************************************************************************************************************************/
         /*--- Destructor ---*/
-        ~SendPT()
+        ~SendPT_SFCATA()
         {
             this.Dispose();
         }
@@ -321,6 +317,5 @@ namespace SentinelaRoku.SendClasses
             }
         }
         /*************************************************************************************************************************/
-
     }
 }

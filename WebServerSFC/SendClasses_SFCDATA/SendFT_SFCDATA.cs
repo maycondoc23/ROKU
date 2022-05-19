@@ -1,22 +1,19 @@
-﻿using SentinelaRoku.ServiceReferenceTEST;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.OleDb;
-using System.IO;
-using System.IO.Ports;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
-using WebServerSFC;
 using WebServerSFC.Classes;
 
-namespace SentinelaRoku.SendClasses
+namespace SentinelaRoku.SendClasses_SFCDATA
 {
-    class SendPT : IDisposable
+    class SendFT_SFCDATA: IDisposable
     {
         private DataTable tableErrorCode;
         private DataTable tableStation;
-
         private string operatorID;
         private string productLine;
         private string hostName;
@@ -24,7 +21,7 @@ namespace SentinelaRoku.SendClasses
 
         /*************************************************************************************************************************/
         /*--- Construtor ---*/
-        public SendPT(string id, string host, string group, DataTable stations, DataTable errorCodes)
+        public SendFT_SFCDATA(string id, string host, string group, DataTable stations, DataTable errorCodes)
         {
             operatorID = id;
             productLine = ConfigurationManager.AppSettings["PRODUCT_LINE"];
@@ -46,12 +43,9 @@ namespace SentinelaRoku.SendClasses
             bool resultTest = false;
             string testAnswer = string.Empty;
 
-
             /*--- Análise ---*/
             try
             {
-                //string message = Receive.Substring(3);
-
                 if (Receive.Contains("1>>")) //Consulta no WebService
                 {
                     string message = Receive.Substring(3);
@@ -71,14 +65,32 @@ namespace SentinelaRoku.SendClasses
                     {
                         /*--- Consulta no WebService ---*/
                         //var webservice = new WebServiceMethods();
-
                         //var resultGetData = webservice.SFIS_GET_DATA(SN);
 
                         //string GetDataErrorMessage = resultGetData.ErrorMessage;
 
                         //string PN = resultGetData.Configuration.Sku;
+                        //DeviceDetail[] details = resultGetData.Configuration.DeviceDetails;
+
+                        //string CSN = string.Empty;
+                        //string CESN = string.Empty;
+
+                        //foreach (DeviceDetail detail in details)
+                        //{
+                        //    if (detail.Key == "CSN")
+                        //    {
+                        //        CSN = detail.Value;
+                        //    }
+
+                        //    if (detail.Key == "CESN")
+                        //    {
+                        //        CESN = detail.Value;
+                        //    }
+                        //}
 
                         string PN = "RU9026000643";
+                        string CSN = string.Empty;
+                        string CESN = string.Empty;
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -88,17 +100,16 @@ namespace SentinelaRoku.SendClasses
                         //{
                         //    resultTest = true;
 
-                        //    testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                        //    testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                         //}
                         //else if (resultGetData.StatusCode == "1")   //check not OK
                         //{
-
                         //    resultTest = false;
 
-                        //    testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
+                        //    testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{GetDataErrorMessage}";
                         //}
 
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                        testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
 
                         SendMessageToTest(testAnswer);
 
@@ -106,8 +117,7 @@ namespace SentinelaRoku.SendClasses
                     }
                     else
                     {
-                        SendMessageToTest($"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
-
+                        SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
 
@@ -127,33 +137,13 @@ namespace SentinelaRoku.SendClasses
                     if (ResultTest == "PASS")
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#OK,UNIT PASS!";
+                        testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";
 
                         SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
                         //var webservice = new WebServiceMethods();
-
-                        /*--- Envio dos dados de CSN e CESN ---*/
-                        //List<DeviceDetail> listDetail = new List<DeviceDetail>();
-
-                        //listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
-                        //listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
-
-                        //var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
-
-                        //if (send_CSN_CESN.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
-
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
-                        //    }
-                        //}
-
-                        /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
                         /*--- Logout do SN ---*/
@@ -174,33 +164,13 @@ namespace SentinelaRoku.SendClasses
                     else // Test result Fail
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#{ResultTest}";
+                        testAnswer = $"2>>SERIALNO={SN}#{ResultTest}";
 
                         SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
                         //var webservice = new WebServiceMethods();
-
-                        /*--- Envio dos dados de CSN e CESN ---*/
-                        //List<DeviceDetail> listDetail = new List<DeviceDetail>();
-
-                        //listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
-                        //listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
-
-                        //var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
-
-                        //if (send_CSN_CESN.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
-
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
-                        //    }
-                        //}
-
-                        /*-----------------------------------------------------------------------------------------------------------------------*/
 
                         /*--- Logout do SN ---*/
                         //DataRow[] consultErrorCode = tableErrorCode.Select($"Description LIKE '%{ResultTest}%'");
@@ -233,12 +203,11 @@ namespace SentinelaRoku.SendClasses
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendPT.cs Flag-1: {ex.Message}");
+                    writeLog.WriteLogFile($"SendFT.cs Flag-1: {ex.Message}");
                 }
-                MessageBox.Show($"SendPT.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"SendFT.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                 throw;
             }
-
             /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
@@ -265,26 +234,25 @@ namespace SentinelaRoku.SendClasses
             try
             {
                 //escreve uma string num arquivo, cria o arquivo se não existir
+                //escreve uma string num arquivo, cria o arquivo se não existir
 
-                string[] mensagem = { sendMessage };
-                System.IO.File.AppendAllLines($@"{ConfigurationManager.AppSettings["LogFilePT"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt", mensagem, System.Text.Encoding.ASCII);
-
+                System.IO.File.WriteAllText($@"{ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}.txt", sendMessage);
 
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"File sent for testing: {$@"{ConfigurationManager.AppSettings["LogFilePT"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt"}");
+                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}.txt");
                 }
             }
             catch (Exception ex)
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendPT.cs Flag-2: {ex.Message}");
+                    writeLog.WriteLogFile($"SendFT.cs Flag-2: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendPT.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendFT.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
-            }            
+            }
 
             /*-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -300,7 +268,7 @@ namespace SentinelaRoku.SendClasses
 
         /*************************************************************************************************************************/
         /*--- Destructor ---*/
-        ~SendPT()
+        ~SendFT_SFCDATA()
         {
             this.Dispose();
         }
@@ -321,6 +289,5 @@ namespace SentinelaRoku.SendClasses
             }
         }
         /*************************************************************************************************************************/
-
     }
 }

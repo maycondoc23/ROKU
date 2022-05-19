@@ -15,6 +15,7 @@ using System.Linq;
 using WebServerSFC.Classes;
 using System.Collections.Generic;
 using System.Globalization;
+using SentinelaRoku.SendClasses_SFCDATA;
 
 namespace WebServerSFC
 {
@@ -35,9 +36,14 @@ namespace WebServerSFC
         private DataTable tableStation;
         private DataTable tableErrorCode;
 
+        private DataTable tableStation_SFCDATA;
+        private DataTable tableErrorCode_SFCDATA;
+
         DispatcherTimer timer = new DispatcherTimer(); //Exibe os 3 últimos resultados de teste
 
         private static FileSystemWatcher _monitorarLogOUT;
+
+        private static FileSystemWatcher _monitorarSFCDATA_OUT;
 
         public List<DateTime> lastMessageTime;
 
@@ -128,6 +134,8 @@ namespace WebServerSFC
 
                 MonitorarArquivos(fileLogMonitor, "*.txt", OnFileChanged);
 
+                MonitorarArquivos_SFCDATA_OUT(ConfigurationManager.AppSettings["SFCDATA_OUT"], "*.txt", OnFileCreated);
+
                 if (!ExistExe)
                 {
                     using (var programStart = new ProgramStart())
@@ -177,6 +185,7 @@ namespace WebServerSFC
         private void LoadDataTableHostnamesROKU()
         {
             tableStation = new DataTable();
+            tableStation_SFCDATA = new DataTable();
 
             string fileName = $@"{Directory.GetCurrentDirectory()}\TableStationTest\HostnamesROKU.xlsx";
 
@@ -188,6 +197,7 @@ namespace WebServerSFC
                     // retrieve the data using data adapter
                     OleDbDataAdapter sheetAdapter = new OleDbDataAdapter($"select * from [Sheet1$]", conn);
                     sheetAdapter.Fill(tableStation);
+                    sheetAdapter.Fill(tableStation_SFCDATA);
                     conn.Close();
 
                 }
@@ -211,6 +221,7 @@ namespace WebServerSFC
         private void LoadDataTableErrorCode(string groupName)
         {
             tableErrorCode = new DataTable();
+            tableErrorCode_SFCDATA = new DataTable();
 
             string fileName = $@"{Directory.GetCurrentDirectory()}\TableErrorCodeROKU\ErrorCode.xlsx";
 
@@ -222,6 +233,7 @@ namespace WebServerSFC
                     // retrieve the data using data adapter
                     OleDbDataAdapter sheetAdapter = new OleDbDataAdapter($"select * from [{groupName}$]", conn);
                     sheetAdapter.Fill(tableErrorCode);
+                    sheetAdapter.Fill(tableErrorCode_SFCDATA);
                     conn.Close();
 
                 }
@@ -319,7 +331,7 @@ namespace WebServerSFC
 
 
         /*************************************************************************************************************************/
-        /*--- Inicializa o monitoramento dos logs de teste ---*/
+        /*--- Inicializa o monitoramento dos logs de teste do diretório LogFile ---*/
         public static void MonitorarArquivos(string path, string filtro, FileSystemEventHandler OnFileChanged)
         {
             _monitorarLogOUT = new FileSystemWatcher(path, filtro)
@@ -333,6 +345,27 @@ namespace WebServerSFC
             //_monitorarLogOUT.Renamed += OnFileRenamed;
 
             _monitorarLogOUT.EnableRaisingEvents = true;
+            //Console.WriteLine($"Monitorando arquivos e: {filtro}");
+        }
+
+        /*************************************************************************************************************************/
+
+
+        /*************************************************************************************************************************/
+        /*--- Inicializa o monitoramento dos logs de teste do diretório LogFile ---*/
+        public static void MonitorarArquivos_SFCDATA_OUT(string path, string filtro, FileSystemEventHandler OnFileCreated)
+        {
+            _monitorarSFCDATA_OUT = new FileSystemWatcher(path, filtro)
+            {
+                IncludeSubdirectories = true
+            };
+
+            _monitorarSFCDATA_OUT.Created += new FileSystemEventHandler(OnFileCreated);
+            //_monitorarSFCDATA_OUT.Changed += OnFileChanged;
+            //_monitorarSFCDATA_OUT.Deleted += OnFileChanged;
+            //_monitorarSFCDATA_OUT.Renamed += OnFileRenamed;
+
+            _monitorarSFCDATA_OUT.EnableRaisingEvents = true;
             //Console.WriteLine($"Monitorando arquivos e: {filtro}");
         }
 
@@ -472,6 +505,135 @@ namespace WebServerSFC
             }
 
             _monitorarLogOUT.EnableRaisingEvents = true;
+        }
+
+        /*************************************************************************************************************************/
+
+
+        /*************************************************************************************************************************/
+        /*--- Verifica a mudança de um arquivo ---*/
+        private void OnFileCreated(object sender, FileSystemEventArgs e)
+        {
+            _monitorarSFCDATA_OUT.EnableRaisingEvents = false;
+
+            using (var writeLog = new WriteLog())
+            {
+                writeLog.WriteLogFile($@"File Out Created: {e.FullPath}.");
+            }
+
+            try
+            {
+                string fileLog = string.Empty;
+
+                try
+                {
+                    fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        System.Threading.Thread.Sleep(200);
+                        fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
+                    }
+                    catch (Exception)
+                    {
+                        try
+                        {
+                            System.Threading.Thread.Sleep(200);
+                            fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
+                        }
+                        catch (Exception ex)
+                        {
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-5: {ex.Message}");
+                            }
+                            MessageBox.Show($"ComPortMonitor.xaml.cs Flag-5: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+
+                if (fileLog.Contains(">>") && fileLog.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
+                {
+
+                    switch (StationGroup)
+                    {
+                        case "PT":
+
+                            using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendPT_SFCATA.messageAnalysis(fileLog);
+                            }
+
+                            break;
+
+                        case "FT":
+
+                            using (SendFT_SFCDATA sendFT_SFCDATA = new SendFT_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendFT_SFCDATA.messageAnalysis(fileLog);
+                            }
+
+                            break;
+
+                        case "RC":
+
+                            using (SendRC_SFCDATA sendRC_SFCDATA = new SendRC_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendRC_SFCDATA.messageAnalysis(fileLog);
+                            }
+
+                            break;
+
+                        case "LASER":
+
+                            using (SendLASER_SFCDATA sendLASE_SFCDATAR = new SendLASER_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendLASE_SFCDATAR.messageAnalysis(fileLog);
+                            }
+
+                            break;
+
+                        case "AUTO_OBA":
+
+                            using (SendAUTO_OBA_SFCDATA sendAUTO_OBA_SFCDATA = new SendAUTO_OBA_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
+                            }
+
+                            break;
+
+                        default:
+                            MessageBox.Show($"Unidentified station {StationGroup}.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile($"Unidentified station {StationGroup}.");
+                            }
+                            break;
+                    }
+
+                }
+
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"Mensagem recebidado do teste: {fileLog}");
+                }
+            }
+            catch (Exception ex)
+            {
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-6: {ex.Message}");
+                }
+
+                MessageBox.Show($"ComPortMonitor.xaml.cs Flag-6: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            }
+
+            if (File.Exists(e.FullPath)) File.Delete(e.FullPath);
+
+            _monitorarSFCDATA_OUT.EnableRaisingEvents = true;
         }
 
         /*************************************************************************************************************************/
