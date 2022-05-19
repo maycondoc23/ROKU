@@ -112,13 +112,13 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
 
-                        SendMessageToTest(testAnswer);
+                        SendMessageToTest(testAnswer, "start");
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
                     else
                     {
-                        SendMessageToTest($"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
+                        SendMessageToTest($"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME=#Wrong hostname!", "start");
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
 
@@ -140,7 +140,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                         /*--- Resposta para o teste ---*/
                         testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";
 
-                        SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
+                        SendMessageToTest(testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -167,7 +167,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                         /*--- Resposta para o teste ---*/
                         testAnswer = $"2>>SERIALNO={SN}#{ResultTest}";
 
-                        SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
+                        SendMessageToTest(testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -204,9 +204,9 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendRC.cs Flag-1: {ex.Message}");
+                    writeLog.WriteLogFile($"SendRC_SFCDATA.cs Flag-1: {ex.Message}");
                 }
-                MessageBox.Show($"SendRC.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show($"SendRC_SFCDATA.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                 throw;
             }
             /*-----------------------------------------------------------------------------------------------------------------------*/
@@ -223,7 +223,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Escreve o arquivo de resposta para o teste na pasta C:\SFCDATA_IN ---*/
-        public List<object> SendMessageToTest(string sendMessage)
+        public List<object> SendMessageToTest(string sendMessage, string testStage)
         {
             List<object> resultList = new List<object>();
 
@@ -236,21 +236,21 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 //escreve uma string num arquivo, cria o arquivo se não existir
 
-                System.IO.File.WriteAllText($@"{ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}.txt", sendMessage);
+                System.IO.File.WriteAllText($@"{ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt", sendMessage);
 
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}.txt");
+                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt");
                 }
             }
             catch (Exception ex)
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendRC.cs Flag-2: {ex.Message}");
+                    writeLog.WriteLogFile($"SendRC_SFCDATA.cs Flag-2: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendRC.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendRC_SFCDATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
 
