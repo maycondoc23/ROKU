@@ -3,16 +3,17 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
-using System.Data.OleDb;
 using System.IO;
-using System.IO.Ports;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using WebServerSFC;
 using WebServerSFC.Classes;
 
-namespace SentinelaRoku.SendClasses
+namespace SentinelaRoku.SendClasses_SFCDATA
 {
-    class SendAUTO_OBA : IDisposable
+    class SendRC_SFCDATA: IDisposable
     {
         private DataTable tableErrorCode;
         private DataTable tableStation;
@@ -23,87 +24,14 @@ namespace SentinelaRoku.SendClasses
 
         /*************************************************************************************************************************/
         /*--- Construtor ---*/
-        public SendAUTO_OBA(string id, string host, string group)
+        public SendRC_SFCDATA(string id, string host, string group, DataTable stations, DataTable errorCodes)
         {
             operatorID = id;
             productLine = ConfigurationManager.AppSettings["PRODUCT_LINE"];
             hostName = host;
             groupName = group;
-
-            LoadDataTableHostnamesROKU();
-            LoadDataTableErrorCode();
-        }
-
-        /*************************************************************************************************************************/
-
-
-        /*************************************************************************************************************************/
-        /*--- Lê o arquivo HostnamesROKU.xlsx para a DataTable tableStation ---*/
-        private void LoadDataTableHostnamesROKU()
-        {
-            tableStation = new DataTable();
-
-            string fileName = $@"{Directory.GetCurrentDirectory()}\TableStationTest\HostnamesROKU.xlsx";
-
-            using (OleDbConnection conn = this.returnConnection(fileName))
-            {
-                try
-                {
-                    conn.Open();
-                    // retrieve the data using data adapter
-                    OleDbDataAdapter sheetAdapter = new OleDbDataAdapter($"select * from [Sheet1$]", conn);
-                    sheetAdapter.Fill(tableStation);
-                    conn.Close();
-
-                }
-                catch (Exception ex)
-                {
-
-                    MessageBox.Show(ex.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-
-        }
-
-        /*************************************************************************************************************************/
-
-
-        /*************************************************************************************************************************/
-        /*--- Lê o arquivo ErrorCode.xlsx para a DataTable tableErrorCode ---*/
-        private void LoadDataTableErrorCode()
-        {
-            tableErrorCode = new DataTable();
-
-            string fileName = $@"{Directory.GetCurrentDirectory()}\TableErrorCodeROKU\ErrorCode.xlsx";
-
-            using (OleDbConnection conn = this.returnConnection(fileName))
-            {
-                try
-                {
-                    conn.Open();
-                    // retrieve the data using data adapter
-                    OleDbDataAdapter sheetAdapter = new OleDbDataAdapter($"select * from [AUTO_OBA$]", conn);
-                    sheetAdapter.Fill(tableErrorCode);
-                    conn.Close();
-
-                }
-                catch (Exception ex)
-                {
-
-                    MessageBox.Show(ex.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
-                }
-            }
-
-        }
-
-        /*************************************************************************************************************************/
-
-
-        /*************************************************************************************************************************/
-        /*--- Conexão com a planilha de Error Code ---*/
-        private OleDbConnection returnConnection(string fileName)
-        {
-            return new OleDbConnection($@"Provider = Microsoft.ACE.OLEDB.12.0; Data Source = { fileName }; Extended Properties = Excel 12.0;");
+            tableStation = stations;
+            tableErrorCode = errorCodes;
         }
 
         /*************************************************************************************************************************/
@@ -172,24 +100,27 @@ namespace SentinelaRoku.SendClasses
                         {
                             resultTest = true;
 
-                            testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                            testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                         }
                         else if (resultGetData.StatusCode == "1")   //check not OK
                         {
                             resultTest = false;
 
-                            testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{GetDataErrorMessage}";
+                            testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{GetDataErrorMessage}";
                         }
 
-                        SendMessageToTest(testAnswer);
+                        testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+
+                        SendMessageToTest(testAnswer, "start");
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
                     else
                     {
-                        SendMessageToTest($"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME=#Wrong hostname!");
+                        SendMessageToTest($"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:1>>SERIALNO={SN},PNNAME=#Wrong hostname!", "start");
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
+
                 }
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {
@@ -206,9 +137,9 @@ namespace SentinelaRoku.SendClasses
                     if (ResultTest == "PASS")
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#OK,UNIT PASS!";
+                        testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";
 
-                        SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
+                        SendMessageToTest(testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -220,9 +151,7 @@ namespace SentinelaRoku.SendClasses
 
                         if (resultLogout.StatusCode == "1")
                         {
-                            AlertMessage alertMessage = new AlertMessage();
-                            alertMessage.InsertMessage(resultLogout.ErrorMessage);
-                            alertMessage.Show();
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
                             using (var writeLog = new WriteLog())
                             {
@@ -235,9 +164,9 @@ namespace SentinelaRoku.SendClasses
                     else // Test result Fail
                     {
                         /*--- Resposta para o teste ---*/
-                        testAnswer = $"{DateTime.Now.ToString("HH:mm:ss:fff")} flag=2;SMO->UI:2>>SERIALNO={SN}#{ResultTest}";
+                        testAnswer = $"2>>SERIALNO={SN}#{ResultTest}";
 
-                        SendMessageToTest(testAnswer); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
+                        SendMessageToTest(testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
@@ -257,9 +186,7 @@ namespace SentinelaRoku.SendClasses
 
                         if (resultLogout.StatusCode == "1")
                         {
-                            AlertMessage alertMessage = new AlertMessage();
-                            alertMessage.InsertMessage(resultLogout.ErrorMessage);
-                            alertMessage.Show();
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
                             using (var writeLog = new WriteLog())
                             {
@@ -274,7 +201,11 @@ namespace SentinelaRoku.SendClasses
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"SendRC_SFCDATA.cs Flag-1: {ex.Message}");
+                }
+                MessageBox.Show($"SendRC_SFCDATA.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                 throw;
             }
             /*-----------------------------------------------------------------------------------------------------------------------*/
@@ -291,7 +222,7 @@ namespace SentinelaRoku.SendClasses
 
         /*************************************************************************************************************************/
         /*--- Escreve o arquivo de resposta para o teste na pasta C:\SFCDATA_IN ---*/
-        public List<object> SendMessageToTest(string sendMessage)
+        public List<object> SendMessageToTest(string sendMessage, string testStage)
         {
             List<object> resultList = new List<object>();
 
@@ -303,23 +234,22 @@ namespace SentinelaRoku.SendClasses
             try
             {
                 //escreve uma string num arquivo, cria o arquivo se não existir
-                //string[] messageForTest = { sendMessage };
 
-                File.AppendAllText($@"{ConfigurationManager.AppSettings["LogFileOBA"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt", string.Join(Environment.NewLine, sendMessage));
+                System.IO.File.WriteAllText($@"{ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt", sendMessage);
 
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"File sent for testing: {$@"{ConfigurationManager.AppSettings["LogFileOBA"]}\{DateTime.Now.ToString("yyyyMMdd")}-Log.txt"}");
+                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt");
                 }
             }
             catch (Exception ex)
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendAUTO_OBA.cs Flag-OnFileChanged: {ex.Message}");
+                    writeLog.WriteLogFile($"SendRC_SFCDATA.cs Flag-2: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendAUTO_OBA.cs Flag-: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendRC_SFCDATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
 
@@ -337,7 +267,7 @@ namespace SentinelaRoku.SendClasses
 
         /*************************************************************************************************************************/
         /*--- Destructor ---*/
-        ~SendAUTO_OBA()
+        ~SendRC_SFCDATA()
         {
             this.Dispose();
         }

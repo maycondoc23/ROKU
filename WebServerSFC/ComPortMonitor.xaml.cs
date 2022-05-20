@@ -1,5 +1,4 @@
-﻿using SentinelaRoku.SendClasses;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
@@ -15,6 +14,7 @@ using System.Linq;
 using WebServerSFC.Classes;
 using System.Collections.Generic;
 using System.Globalization;
+using SentinelaRoku.SendClasses_SFCDATA;
 
 namespace WebServerSFC
 {
@@ -33,10 +33,14 @@ namespace WebServerSFC
         public string StationGroup { get; set; }
 
         private DataTable tableStation;
+        private DataTable tableErrorCode;
+
+        private DataTable tableStation_SFCDATA;
+        private DataTable tableErrorCode_SFCDATA;
 
         DispatcherTimer timer = new DispatcherTimer(); //Exibe os 3 últimos resultados de teste
 
-        private static FileSystemWatcher _monitorarLogOUT;
+        private static FileSystemWatcher _monitorarSFCDATA_OUT;
 
         public List<DateTime> lastMessageTime;
 
@@ -55,6 +59,8 @@ namespace WebServerSFC
             lbStation.Text = Hostname;
 
             StationGroup = consultHostName[0]["SFC_Station"].ToString();
+
+            LoadDataTableErrorCode(StationGroup);
 
             if (MainWindow.TestModeControl)
             {
@@ -79,8 +85,6 @@ namespace WebServerSFC
             this.Title = $"SENTINELA ROKU { Assembly.GetExecutingAssembly().GetName().Version}";
 
             var desktopWorkingArea = SystemParameters.WorkArea;
-
-
 
             /*--- Exibe os 3 últimos resultados de teste ---*/
             timer.Tick += TimerTick;
@@ -125,7 +129,7 @@ namespace WebServerSFC
                     fileLogMonitor = ConfigurationManager.AppSettings["LogFileOBA"];
                 }
 
-                MonitorarArquivos(fileLogMonitor, "*.txt", OnFileChanged);
+                MonitorarArquivos_SFCDATA_OUT(ConfigurationManager.AppSettings["SFCDATA_OUT"], "*.txt", OnFileCreated);
 
                 if (!ExistExe)
                 {
@@ -166,7 +170,6 @@ namespace WebServerSFC
                     aProcess.Kill();
                 }
             }
-
         }
 
         /*************************************************************************************************************************/
@@ -177,6 +180,7 @@ namespace WebServerSFC
         private void LoadDataTableHostnamesROKU()
         {
             tableStation = new DataTable();
+            tableStation_SFCDATA = new DataTable();
 
             string fileName = $@"{Directory.GetCurrentDirectory()}\TableStationTest\HostnamesROKU.xlsx";
 
@@ -188,13 +192,53 @@ namespace WebServerSFC
                     // retrieve the data using data adapter
                     OleDbDataAdapter sheetAdapter = new OleDbDataAdapter($"select * from [Sheet1$]", conn);
                     sheetAdapter.Fill(tableStation);
+                    sheetAdapter.Fill(tableStation_SFCDATA);
                     conn.Close();
 
                 }
                 catch (Exception ex)
                 {
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-1: {ex.Message}");
+                    }
+                    MessageBox.Show($"ComPortMonitor.xaml.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
 
-                    MessageBox.Show(ex.Message, "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+
+        /*************************************************************************************************************************/
+
+
+        /*************************************************************************************************************************/
+        /*--- Lê o arquivo ErrorCode.xlsx para a DataTable tableErrorCode ---*/
+        private void LoadDataTableErrorCode(string groupName)
+        {
+            tableErrorCode = new DataTable();
+            tableErrorCode_SFCDATA = new DataTable();
+
+            string fileName = $@"{Directory.GetCurrentDirectory()}\TableErrorCodeROKU\ErrorCode.xlsx";
+
+            using (OleDbConnection conn = this.returnConnection(fileName))
+            {
+                try
+                {
+                    conn.Open();
+                    // retrieve the data using data adapter
+                    OleDbDataAdapter sheetAdapter = new OleDbDataAdapter($"select * from [{groupName}$]", conn);
+                    sheetAdapter.Fill(tableErrorCode);
+                    sheetAdapter.Fill(tableErrorCode_SFCDATA);
+                    conn.Close();
+
+                }
+                catch (Exception ex)
+                {
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-2: {ex.Message}");
+                    }
+                    MessageBox.Show($"ComPortMonitor.xaml.cs Flag-2: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
 
@@ -282,20 +326,20 @@ namespace WebServerSFC
 
 
         /*************************************************************************************************************************/
-        /*--- Inicializa o monitoramento dos logs de teste ---*/
-        public static void MonitorarArquivos(string path, string filtro, FileSystemEventHandler OnFileChanged)
+        /*--- Inicializa o monitoramento dos logs de teste do diretório LogFile ---*/
+        public static void MonitorarArquivos_SFCDATA_OUT(string path, string filtro, FileSystemEventHandler OnFileCreated)
         {
-            _monitorarLogOUT = new FileSystemWatcher(path, filtro)
+            _monitorarSFCDATA_OUT = new FileSystemWatcher(path, filtro)
             {
                 IncludeSubdirectories = true
             };
 
-            //_monitorarLogOUT.Created += new FileSystemEventHandler(OnFileChanged);
-            _monitorarLogOUT.Changed += OnFileChanged;
-            //_monitorarLogOUT.Deleted += OnFileChanged;
-            //_monitorarLogOUT.Renamed += OnFileRenamed;
+            _monitorarSFCDATA_OUT.Created += new FileSystemEventHandler(OnFileCreated);
+            //_monitorarSFCDATA_OUT.Changed += OnFileChanged;
+            //_monitorarSFCDATA_OUT.Deleted += OnFileChanged;
+            //_monitorarSFCDATA_OUT.Renamed += OnFileRenamed;
 
-            _monitorarLogOUT.EnableRaisingEvents = true;
+            _monitorarSFCDATA_OUT.EnableRaisingEvents = true;
             //Console.WriteLine($"Monitorando arquivos e: {filtro}");
         }
 
@@ -304,130 +348,107 @@ namespace WebServerSFC
 
         /*************************************************************************************************************************/
         /*--- Verifica a mudança de um arquivo ---*/
-        private void OnFileChanged(object sender, FileSystemEventArgs e)
+        private void OnFileCreated(object sender, FileSystemEventArgs e)
         {
-            _monitorarLogOUT.EnableRaisingEvents = false;
+            _monitorarSFCDATA_OUT.EnableRaisingEvents = false;
 
             using (var writeLog = new WriteLog())
             {
-                writeLog.WriteLogFile($@"File Out Changed {e.FullPath}.");
+                writeLog.WriteLogFile($@"File Out Created: {e.FullPath}.");
             }
 
             try
             {
-                //List<string> fileLog = new List<string>();
                 string fileLog = string.Empty;
 
                 try
                 {
-                    fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                    //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                    fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
                 }
                 catch (Exception)
                 {
                     try
                     {
                         System.Threading.Thread.Sleep(200);
-                        fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                        //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                        fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
                     }
                     catch (Exception)
                     {
                         try
                         {
                             System.Threading.Thread.Sleep(200);
-                            fileLog = File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                            //fileLog = new List<string>(System.IO.File.ReadAllLines(e.FullPath));
+                            fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
                         }
                         catch (Exception ex)
                         {
-
-                            MessageBox.Show($"ComPortMonitor Flag- Leitura do Log: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-5: {ex.Message}");
+                            }
+                            MessageBox.Show($"ComPortMonitor.xaml.cs Flag-5: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                         }
                     }
                 }
 
-                //string lastMessage = string.Empty;
-
-                //if ((fileLog.Count > 0) && (fileLog[fileLog.Count - 1] != string.Empty))
-                //{
-                //    lastMessage = fileLog[fileLog.Count - 1];
-                //}
-                //else if ((fileLog.Count > 0) && (fileLog[fileLog.Count - 2] != string.Empty))
-                //{
-                //    lastMessage = fileLog[fileLog.Count - 2];
-                //}
-
-                if (fileLog.Contains("flag=2;UI->SMO:") && fileLog.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
+                if (fileLog.Contains(">>") && fileLog.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
                 {
-                    DateTime timeMessage = DateTime.ParseExact(fileLog.Split(' ')[0], "HH:mm:ss:fff", CultureInfo.InvariantCulture);
 
-                    if ((lastMessageTime == null) || (DateTime.Compare(timeMessage, lastMessageTime[lastMessageTime.Count - 1]) == 1) )
+                    switch (StationGroup)
                     {
-                        string receivedData = fileLog.Split(':')[4];
+                        case "PT":
 
-                        switch (StationGroup)
-                        {
-                            case "PT":
+                            using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendPT_SFCATA.messageAnalysis(fileLog);
+                            }
 
-                                using (SendPT sendPT = new SendPT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                                {
-                                    sendPT.messageAnalysis(receivedData);
-                                }
+                            break;
 
-                                break;
+                        case "FT":
 
-                            case "FT":
+                            using (SendFT_SFCDATA sendFT_SFCDATA = new SendFT_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendFT_SFCDATA.messageAnalysis(fileLog);
+                            }
 
-                                using (SendFT sendFT = new SendFT(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                                {
-                                    sendFT.messageAnalysis(receivedData);
-                                }
+                            break;
 
-                                break;
+                        case "RC":
 
-                            case "RC":
+                            using (SendRC_SFCDATA sendRC_SFCDATA = new SendRC_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendRC_SFCDATA.messageAnalysis(fileLog);
+                            }
 
-                                using (SendRC sendRC = new SendRC(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                                {
-                                    sendRC.messageAnalysis(receivedData);
-                                }
+                            break;
 
-                                break;
+                        case "LASER":
 
-                            case "LASER":
+                            using (SendLASER_SFCDATA sendLASE_SFCDATAR = new SendLASER_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendLASE_SFCDATAR.messageAnalysis(fileLog);
+                            }
 
-                                using (SendLASER sendLASER = new SendLASER(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                                {
-                                    sendLASER.messageAnalysis(receivedData);
-                                }
+                            break;
 
-                                break;
+                        case "AUTO_OBA":
 
-                            case "AUTO_OBA":
+                            using (SendAUTO_OBA_SFCDATA sendAUTO_OBA_SFCDATA = new SendAUTO_OBA_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
+                            }
 
-                                using (SendAUTO_OBA sendAUTO_OBA = new SendAUTO_OBA(MainWindow.OperatorId, MainWindow.HostName, StationGroup))
-                                {
-                                    sendAUTO_OBA.messageAnalysis(receivedData);
-                                }
+                            break;
 
-                                break;
-
-                            default:
-                                MessageBox.Show($"Unidentified station {StationGroup}.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
-                                using (var writeLog = new WriteLog())
-                                {
-                                    writeLog.WriteLogFile($"Unidentified station {StationGroup}.");
-                                }
-                                break;
-                        }
-
-                        using (var writeLog = new WriteLog())
-                        {
-                            writeLog.WriteLogFile($"Mensagem enviada para verificação: {receivedData}");
-                        }
-
+                        default:
+                            MessageBox.Show($"Unidentified station {StationGroup}.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile($"Unidentified station {StationGroup}.");
+                            }
+                            break;
                     }
+
                 }
 
                 using (var writeLog = new WriteLog())
@@ -439,14 +460,16 @@ namespace WebServerSFC
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"ComPortMonitor.cs Flag-OnFileChanged: {ex.Message}");
+                    writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-6: {ex.Message}");
                 }
 
-                MessageBox.Show($"ComPortMonitor.cs Flag-OnFileChanged: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"ComPortMonitor.xaml.cs Flag-6: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
 
             }
 
-            _monitorarLogOUT.EnableRaisingEvents = true;
+            if (File.Exists(e.FullPath)) File.Delete(e.FullPath);
+
+            _monitorarSFCDATA_OUT.EnableRaisingEvents = true;
         }
 
         /*************************************************************************************************************************/

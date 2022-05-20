@@ -16,35 +16,35 @@ namespace WebServerSFC.Classes
         public void WriteLogFile(string Info)
         {
             bool control = true;
-            if (!File.Exists($@"{ Directory.GetCurrentDirectory()}\log\WebServerSFC.log"))
+            if (!System.IO.File.Exists($@"{ Directory.GetCurrentDirectory()}\log\WebServerSFC.log"))
             {
                 control = false;
                 Directory.CreateDirectory($@"{ Directory.GetCurrentDirectory()}\log");
             }
             string path = $@"{Directory.GetCurrentDirectory()}\log";
-            if (!File.Exists(path) && !control)
+            if (!System.IO.File.Exists(path) && !control)
             {
-                using (StreamWriter sw = File.CreateText($@"{path}\WebServerSFC.log"))
+                using (StreamWriter sw = System.IO.File.CreateText($@"{path}\WebServerSFC.log"))
                 {
                     sw.WriteLine($@"{Info} >> {DateTime.Now}{Environment.NewLine}");
                 }
             }
             else
             {
-                File.AppendAllText($@"{ Directory.GetCurrentDirectory()}\log\WebServerSFC.log", $@"{Info} >> {DateTime.Now} {Environment.NewLine}{Environment.NewLine}");
+                System.IO.File.AppendAllText($@"{ Directory.GetCurrentDirectory()}\log\WebServerSFC.log", $@"{Info} >> {DateTime.Now} {Environment.NewLine}{Environment.NewLine}");
             }
         }
 
         public void WriteSerialList(string Info)
         {
             bool control = true;
-            if (!File.Exists($@"{ Directory.GetCurrentDirectory()}\log\SerialList.log"))
+            if (!System.IO.File.Exists($@"{ Directory.GetCurrentDirectory()}\log\SerialList.log"))
             {
                 control = false;
                 Directory.CreateDirectory($@"{ Directory.GetCurrentDirectory()}\log");
             }
             string path = $@"{Directory.GetCurrentDirectory()}\log";
-            if (!File.Exists(path) && !control)
+            if (!System.IO.File.Exists(path) && !control)
             {
                 using (StreamWriter sw = File.CreateText($@"{path}\SerialList.log"))
                 {
@@ -53,7 +53,7 @@ namespace WebServerSFC.Classes
             }
             else
             {
-                File.AppendAllText($@"{ Directory.GetCurrentDirectory()}\log\SerialList.log", $@"{Info}  {Environment.NewLine}");
+                System.IO.File.AppendAllText($@"{ Directory.GetCurrentDirectory()}\log\SerialList.log", $@"{Info}  {Environment.NewLine}");
             }
         }
     }
