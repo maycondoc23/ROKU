@@ -1,5 +1,4 @@
-﻿using SentinelaRoku.SendClasses;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
@@ -40,8 +39,6 @@ namespace WebServerSFC
         private DataTable tableErrorCode_SFCDATA;
 
         DispatcherTimer timer = new DispatcherTimer(); //Exibe os 3 últimos resultados de teste
-
-        private static FileSystemWatcher _monitorarLogOUT;
 
         private static FileSystemWatcher _monitorarSFCDATA_OUT;
 
@@ -131,8 +128,6 @@ namespace WebServerSFC
                 {
                     fileLogMonitor = ConfigurationManager.AppSettings["LogFileOBA"];
                 }
-
-                MonitorarArquivos(fileLogMonitor, "*.txt", OnFileChanged);
 
                 MonitorarArquivos_SFCDATA_OUT(ConfigurationManager.AppSettings["SFCDATA_OUT"], "*.txt", OnFileCreated);
 
@@ -332,27 +327,6 @@ namespace WebServerSFC
 
         /*************************************************************************************************************************/
         /*--- Inicializa o monitoramento dos logs de teste do diretório LogFile ---*/
-        public static void MonitorarArquivos(string path, string filtro, FileSystemEventHandler OnFileChanged)
-        {
-            _monitorarLogOUT = new FileSystemWatcher(path, filtro)
-            {
-                IncludeSubdirectories = true
-            };
-
-            //_monitorarLogOUT.Created += new FileSystemEventHandler(OnFileChanged);
-            _monitorarLogOUT.Changed += OnFileChanged;
-            //_monitorarLogOUT.Deleted += OnFileChanged;
-            //_monitorarLogOUT.Renamed += OnFileRenamed;
-
-            _monitorarLogOUT.EnableRaisingEvents = true;
-            //Console.WriteLine($"Monitorando arquivos e: {filtro}");
-        }
-
-        /*************************************************************************************************************************/
-
-
-        /*************************************************************************************************************************/
-        /*--- Inicializa o monitoramento dos logs de teste do diretório LogFile ---*/
         public static void MonitorarArquivos_SFCDATA_OUT(string path, string filtro, FileSystemEventHandler OnFileCreated)
         {
             _monitorarSFCDATA_OUT = new FileSystemWatcher(path, filtro)
@@ -367,144 +341,6 @@ namespace WebServerSFC
 
             _monitorarSFCDATA_OUT.EnableRaisingEvents = true;
             //Console.WriteLine($"Monitorando arquivos e: {filtro}");
-        }
-
-        /*************************************************************************************************************************/
-
-
-        /*************************************************************************************************************************/
-        /*--- Verifica a mudança de um arquivo ---*/
-        private void OnFileChanged(object sender, FileSystemEventArgs e)
-        {
-            _monitorarLogOUT.EnableRaisingEvents = false;
-
-            using (var writeLog = new WriteLog())
-            {
-                writeLog.WriteLogFile($@"File Out Changed {e.FullPath}.");
-            }
-
-            try
-            {
-                string fileLog = string.Empty;
-
-                try
-                {
-                    fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                }
-                catch (Exception)
-                {
-                    try
-                    {
-                        System.Threading.Thread.Sleep(200);
-                        fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                    }
-                    catch (Exception)
-                    {
-                        try
-                        {
-                            System.Threading.Thread.Sleep(200);
-                            fileLog = System.IO.File.ReadLines(e.FullPath).Last(x => x.Length > 0);
-                        }
-                        catch (Exception ex)
-                        {
-                            using (var writeLog = new WriteLog())
-                            {
-                                writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-3: {ex.Message}");
-                            }
-                            MessageBox.Show($"ComPortMonitor.xaml.cs Flag-3: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                }
-
-                if (fileLog.Contains("flag=2;UI->SMO:") && fileLog.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
-                {
-                    DateTime timeMessage = DateTime.ParseExact(fileLog.Split(' ')[0], "HH:mm:ss:fff", CultureInfo.InvariantCulture);
-
-                    if ((lastMessageTime == null) || (DateTime.Compare(timeMessage, lastMessageTime[lastMessageTime.Count - 1]) == 1) )
-                    {
-                        string receivedData = fileLog.Split(':')[4];
-
-                        switch (StationGroup)
-                        {
-                            case "PT":
-
-                                using (SendPT sendPT = new SendPT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
-                                {
-                                    sendPT.messageAnalysis(receivedData);
-                                }
-
-                                break;
-
-                            case "FT":
-
-                                using (SendFT sendFT = new SendFT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
-                                {
-                                    sendFT.messageAnalysis(receivedData);
-                                }
-
-                                break;
-
-                            case "RC":
-
-                                using (SendRC sendRC = new SendRC(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
-                                {
-                                    sendRC.messageAnalysis(receivedData);
-                                }
-
-                                break;
-
-                            case "LASER":
-
-                                using (SendLASER sendLASER = new SendLASER(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
-                                {
-                                    sendLASER.messageAnalysis(receivedData);
-                                }
-
-                                break;
-
-                            case "AUTO_OBA":
-
-                                using (SendAUTO_OBA sendAUTO_OBA = new SendAUTO_OBA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation, tableErrorCode))
-                                {
-                                    sendAUTO_OBA.messageAnalysis(receivedData);
-                                }
-
-                                break;
-
-                            default:
-                                MessageBox.Show($"Unidentified station {StationGroup}.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
-                                using (var writeLog = new WriteLog())
-                                {
-                                    writeLog.WriteLogFile($"Unidentified station {StationGroup}.");
-                                }
-                                break;
-                        }
-
-                        using (var writeLog = new WriteLog())
-                        {
-                            writeLog.WriteLogFile($"Mensagem enviada para verificação: {receivedData}");
-                        }
-
-                    }
-                }
-
-                using (var writeLog = new WriteLog())
-                {
-                    writeLog.WriteLogFile($"Mensagem recebidado do teste: {fileLog}");
-                }
-            }
-            catch (Exception ex)
-            {
-                using (var writeLog = new WriteLog())
-                {
-                    writeLog.WriteLogFile($"ComPortMonitor.xaml.cs Flag-4: {ex.Message}");
-                }
-
-                MessageBox.Show($"ComPortMonitor.xaml.cs Flag-4: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-
-            }
-
-            _monitorarLogOUT.EnableRaisingEvents = true;
         }
 
         /*************************************************************************************************************************/

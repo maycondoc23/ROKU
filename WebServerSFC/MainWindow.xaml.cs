@@ -51,8 +51,7 @@ namespace WebServerSFC
             {
                 System.IO.File.Delete($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt");
             }
-                
-
+               
             try
             {
                 KillProcess();
@@ -67,12 +66,14 @@ namespace WebServerSFC
                 MessageBox.Show($"MainWindow.xaml.cs Flag-1: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
+            ClearLogFiles();
+
             DispatcherTimer timer = new DispatcherTimer();
             timer.Tick += TimerTick;
             timer.Interval = TimeSpan.FromSeconds(5);
             timer.Start();
 
-            this.Title = $"SENTINELA ROKU 2.0.0";
+            this.Title = $"SENTINELA ROKU 3.0.0";
             txtJiga.Focus();
         }
 
@@ -424,7 +425,54 @@ namespace WebServerSFC
             }
         }
 
+        /*************************************************************************************************************************/
 
+
+        /*************************************************************************************************************************/
+        /*--- Limpa os pastas SFCDATA_OUT e SFCDATA_IN ---*/
+        public void ClearLogFiles()
+        {
+            try
+            {
+                string[] filesOut = Directory.GetFiles($@"{ConfigurationManager.AppSettings["SFCDATA_OUT"]}", "*txt");
+
+                foreach (string fileOut in filesOut)
+                {
+                    if (File.Exists(fileOut)) File.Delete(fileOut);
+                }
+            }
+            catch (Exception ex)
+            {
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"MainWindow.xaml.cs Flag-5: {ex.Message}");
+                }
+
+                MessageBox.Show($"MainWindow.xaml.cs Flag-5: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
+
+
+            try
+            {
+                string[] filesOut = Directory.GetFiles($@"{ConfigurationManager.AppSettings["SFCDATA_IN"]}", "*txt");
+
+                foreach (string fileOut in filesOut)
+                {
+                    if (File.Exists(fileOut)) File.Delete(fileOut);
+                }
+            }
+            catch (Exception ex)
+            {
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"MainWindow.xaml.cs Flag-6: {ex.Message}");
+                }
+
+                MessageBox.Show($"MainWindow.xaml.cs Flag-6: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                throw;
+            }
+        }
 
         /*************************************************************************************************************************/
     }

@@ -1,11 +1,14 @@
-﻿using System;
+﻿using SentinelaRoku.ServiceReferenceTEST;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WebServerSFC;
 using WebServerSFC.Classes;
 
 namespace SentinelaRoku.SendClasses_SFCDATA
@@ -68,33 +71,31 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     if (Hostname == hostName)
                     {
                         /*--- Consulta no WebService ---*/
-                        //var webservice = new WebServiceMethods();
+                        var webservice = new WebServiceMethods();
 
-                        //var resultGetData = webservice.SFIS_GET_DATA(SN);
+                        var resultGetData = webservice.SFIS_GET_DATA(SN);
 
-                        //string GetDataErrorMessage = resultGetData.ErrorMessage;
+                        string GetDataErrorMessage = resultGetData.ErrorMessage;
 
-                        //string PN = resultGetData.Configuration.Sku;
-
-                        string PN = "RU9026000643";
+                        string PN = resultGetData.Configuration.Sku;
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
                         /*--- Responde para o teste ---*/
-                        //if (resultGetData.StatusCode == "0") //check OK
-                        //{
-                        //    resultTest = true;
+                        if (resultGetData.StatusCode == "0") //check OK
+                        {
+                            resultTest = true;
 
-                        //    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
-                        //}
-                        //else if (resultGetData.StatusCode == "1")   //check not OK
-                        //{
+                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                        }
+                        else if (resultGetData.StatusCode == "1")   //check not OK
+                        {
 
-                        //    resultTest = false;
+                            resultTest = false;
 
-                        //    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
-                        //}
+                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
+                        }
 
                         testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
 
@@ -131,41 +132,41 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
-                        //var webservice = new WebServiceMethods();
+                        var webservice = new WebServiceMethods();
 
                         /*--- Envio dos dados de CSN e CESN ---*/
-                        //List<DeviceDetail> listDetail = new List<DeviceDetail>();
+                        List<DeviceDetail> listDetail = new List<DeviceDetail>();
 
-                        //listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
-                        //listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
+                        listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
+                        listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
 
-                        //var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
+                        var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
 
-                        //if (send_CSN_CESN.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
+                        if (send_CSN_CESN.StatusCode == "1")
+                        {
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
 
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
-                        //    }
-                        //}
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
+                            }
+                        }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
                         /*--- Logout do SN ---*/
-                        //var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
+                        var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
 
-                        //if (resultLogout.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
+                        if (resultLogout.StatusCode == "1")
+                        {
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(resultLogout.ErrorMessage);
-                        //    }
-                        //}
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile(resultLogout.ErrorMessage);
+                            }
+                        }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
@@ -178,49 +179,49 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
-                        //var webservice = new WebServiceMethods();
+                        var webservice = new WebServiceMethods();
 
                         /*--- Envio dos dados de CSN e CESN ---*/
-                        //List<DeviceDetail> listDetail = new List<DeviceDetail>();
+                        List<DeviceDetail> listDetail = new List<DeviceDetail>();
 
-                        //listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
-                        //listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
+                        listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
+                        listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
 
-                        //var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
+                        var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
 
-                        //if (send_CSN_CESN.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
+                        if (send_CSN_CESN.StatusCode == "1")
+                        {
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
 
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
-                        //    }
-                        //}
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
+                            }
+                        }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
                         /*--- Logout do SN ---*/
-                        //DataRow[] consultErrorCode = tableErrorCode.Select($"Description LIKE '%{ResultTest}%'");
+                        DataRow[] consultErrorCode = tableErrorCode.Select($"Description LIKE '%{ResultTest}%'");
 
-                        //if (consultErrorCode.Length <= 0)
-                        //{
-                        //    consultErrorCode = tableErrorCode.Select($"CODE LIKE '%{ResultTest}%'");
-                        //}
+                        if (consultErrorCode.Length <= 0)
+                        {
+                            consultErrorCode = tableErrorCode.Select($"CODE LIKE '%{ResultTest}%'");
+                        }
 
-                        //string ErrorCode = consultErrorCode[0]["CODE"].ToString();
+                        string ErrorCode = consultErrorCode[0]["CODE"].ToString();
 
-                        //var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, ErrorCode);
+                        var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, ErrorCode);
 
-                        //if (resultLogout.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
+                        if (resultLogout.StatusCode == "1")
+                        {
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(resultLogout.ErrorMessage);
-                        //    }
-                        //}
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile(resultLogout.ErrorMessage);
+                            }
+                        }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
                     }

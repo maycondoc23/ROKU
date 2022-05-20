@@ -136,11 +136,6 @@
     <Compile Include="AlertMessage.xaml.cs">
       <DependentUpon>AlertMessage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="SendClasses\SendAUTO_OBA.cs" />
-    <Compile Include="SendClasses\SendFT.cs" />
-    <Compile Include="SendClasses\SendLASER.cs" />
-    <Compile Include="SendClasses\SendPT.cs" />
-    <Compile Include="SendClasses\SendRC.cs" />
     <Compile Include="SendClasses_SFCDATA\SendAUTO_OBA_SFCDATA.cs" />
     <Compile Include="SendClasses_SFCDATA\SendFT_SFCDATA.cs" />
     <Compile Include="SendClasses_SFCDATA\SendLASER_SFCDATA.cs" />

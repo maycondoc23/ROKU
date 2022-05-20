@@ -1,11 +1,14 @@
-﻿using System;
+﻿using SentinelaRoku.ServiceReferenceTEST;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WebServerSFC;
 using WebServerSFC.Classes;
 
 namespace SentinelaRoku.SendClasses_SFCDATA
@@ -65,50 +68,46 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     if (Hostname == hostName)
                     {
                         /*--- Consulta no WebService ---*/
-                        //var webservice = new WebServiceMethods();
-                        //var resultGetData = webservice.SFIS_GET_DATA(SN);
+                        var webservice = new WebServiceMethods();
+                        var resultGetData = webservice.SFIS_GET_DATA(SN);
 
-                        //string GetDataErrorMessage = resultGetData.ErrorMessage;
+                        string GetDataErrorMessage = resultGetData.ErrorMessage;
 
-                        //string PN = resultGetData.Configuration.Sku;
-                        //DeviceDetail[] details = resultGetData.Configuration.DeviceDetails;
+                        string PN = resultGetData.Configuration.Sku;
+                        DeviceDetail[] details = resultGetData.Configuration.DeviceDetails;
 
-                        //string CSN = string.Empty;
-                        //string CESN = string.Empty;
-
-                        //foreach (DeviceDetail detail in details)
-                        //{
-                        //    if (detail.Key == "CSN")
-                        //    {
-                        //        CSN = detail.Value;
-                        //    }
-
-                        //    if (detail.Key == "CESN")
-                        //    {
-                        //        CESN = detail.Value;
-                        //    }
-                        //}
-
-                        string PN = "RU9026000643";
                         string CSN = string.Empty;
                         string CESN = string.Empty;
+
+                        foreach (DeviceDetail detail in details)
+                        {
+                            if (detail.Key == "CSN")
+                            {
+                                CSN = detail.Value;
+                            }
+
+                            if (detail.Key == "CESN")
+                            {
+                                CESN = detail.Value;
+                            }
+                        }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
                         /*--- Responde para o teste ---*/
-                        //if (resultGetData.StatusCode == "0") //check OK
-                        //{
-                        //    resultTest = true;
+                        if (resultGetData.StatusCode == "0") //check OK
+                        {
+                            resultTest = true;
 
-                        //    testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
-                        //}
-                        //else if (resultGetData.StatusCode == "1")   //check not OK
-                        //{
-                        //    resultTest = false;
+                            testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                        }
+                        else if (resultGetData.StatusCode == "1")   //check not OK
+                        {
+                            resultTest = false;
 
-                        //    testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{GetDataErrorMessage}";
-                        //}
+                            testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{GetDataErrorMessage}";
+                        }
 
                         testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
 
@@ -144,21 +143,21 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
-                        //var webservice = new WebServiceMethods();
+                        var webservice = new WebServiceMethods();
 
 
                         /*--- Logout do SN ---*/
-                        //var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
+                        var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
 
-                        //if (resultLogout.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
+                        if (resultLogout.StatusCode == "1")
+                        {
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(resultLogout.ErrorMessage);
-                        //    }
-                        //}
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile(resultLogout.ErrorMessage);
+                            }
+                        }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
@@ -171,29 +170,29 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
-                        //var webservice = new WebServiceMethods();
+                        var webservice = new WebServiceMethods();
 
                         /*--- Logout do SN ---*/
-                        //DataRow[] consultErrorCode = tableErrorCode.Select($"Description LIKE '%{ResultTest}%'");   
+                        DataRow[] consultErrorCode = tableErrorCode.Select($"Description LIKE '%{ResultTest}%'");
 
-                        //if (consultErrorCode.Length <= 0)
-                        //{
-                        //    consultErrorCode = tableErrorCode.Select($"CODE LIKE '%{ResultTest}%'");
-                        //}
+                        if (consultErrorCode.Length <= 0)
+                        {
+                            consultErrorCode = tableErrorCode.Select($"CODE LIKE '%{ResultTest}%'");
+                        }
 
-                        //string ErrorCode = consultErrorCode[0]["CODE"].ToString();
+                        string ErrorCode = consultErrorCode[0]["CODE"].ToString();
 
-                        //var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, ErrorCode);
+                        var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, ErrorCode);
 
-                        //if (resultLogout.StatusCode == "1")
-                        //{
-                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
+                        if (resultLogout.StatusCode == "1")
+                        {
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
 
-                        //    using (var writeLog = new WriteLog())
-                        //    {
-                        //        writeLog.WriteLogFile(resultLogout.ErrorMessage);
-                        //    }
-                        //}
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile(resultLogout.ErrorMessage);
+                            }
+                        }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
