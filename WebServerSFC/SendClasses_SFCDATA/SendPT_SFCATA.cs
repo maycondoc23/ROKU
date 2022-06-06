@@ -65,51 +65,72 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                     DataRow[] consultHostName = tableStation.Select($"Test_Station LIKE '%{HostNameTest}%'");
 
-                    string Hostname = consultHostName[0]["SFC_HostName"].ToString();
-                    string GroupName = consultHostName[0]["SFC_Station"].ToString();
-
-                    if (Hostname == hostName)
+                    if (consultHostName.Length > 0)
                     {
-                        /*--- Consulta no WebService ---*/
-                        var webservice = new WebServiceMethods();
+                        string Hostname = consultHostName[0]["SFC_HostName"].ToString();
+                        string GroupName = consultHostName[0]["SFC_Station"].ToString();
 
-                        var resultGetData = webservice.SFIS_GET_DATA(SN);
-
-                        string GetDataErrorMessage = resultGetData.ErrorMessage;
-
-                        string PN = resultGetData.Configuration.Sku;
-
-                        /*-----------------------------------------------------------------------------------------------------------------------*/
-
-
-                        /*--- Responde para o teste ---*/
-                        if (resultGetData.StatusCode == "0") //check OK
+                        if (Hostname == hostName)
                         {
-                            resultTest = true;
+                            /*--- Consulta no WebService ---*/
+                            var webservice = new WebServiceMethods();
 
-                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                            var resultGetData = webservice.SFIS_GET_DATA(SN);
+
+                            string GetDataErrorMessage = resultGetData.ErrorMessage;
+
+                            string PN = resultGetData.Configuration.Sku;
+
+                            var resultCheckStatus = webservice.SFIS_CHECK_STATUS(SN, GroupName);
+
+                            string statusMessage = resultCheckStatus.ErrorMessage;
+                            /*-----------------------------------------------------------------------------------------------------------------------*/
+
+
+                            /*--- Responde para o teste ---*/
+                            if (resultCheckStatus.StatusCode == "0")
+                            {
+                                if (resultGetData.StatusCode == "0") //check OK
+                                {
+                                    resultTest = true;
+
+                                    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                                }
+                                else if (resultGetData.StatusCode == "1")   //check not OK
+                                {
+
+                                    resultTest = false;
+
+                                    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
+                                }
+                            }
+                            else
+                            {
+                                resultTest = false;
+
+                                testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{statusMessage}";
+                            }
+
+
+                            //testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+
+                            SendMessageToTest(testAnswer, "start");
+
+                            /*-----------------------------------------------------------------------------------------------------------------------*/
                         }
-                        else if (resultGetData.StatusCode == "1")   //check not OK
+                        else
                         {
+                            SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!", "start");
 
-                            resultTest = false;
-
-                            testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
+                            MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
-
-                        testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
-
-                        SendMessageToTest(testAnswer, "start");
-
-                        /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
                     else
                     {
                         SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!", "start");
 
-                        MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {HostNameTest}" + Environment.NewLine + $"Received hostname: {HostNameTest}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
-
                 }
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {

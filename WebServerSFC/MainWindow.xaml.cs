@@ -73,7 +73,7 @@ namespace WebServerSFC
             timer.Interval = TimeSpan.FromSeconds(5);
             timer.Start();
 
-            this.Title = $"SENTINELA ROKU 3.0.0";
+            this.Title = $"SENTINELA ROKU 7.0.0  - Check Status";
             txtJiga.Focus();
         }
 
@@ -164,7 +164,7 @@ namespace WebServerSFC
         /*--- Descrição ---*/
         public bool CheckHostNameIsValid()
         {
-            if (txtJiga.Text.Contains("M_FT") || txtJiga.Text.Contains("M_PT") || txtJiga.Text.Contains("M_RC") || txtJiga.Text.Contains("M_LASER"))
+            if (txtJiga.Text.Contains("M_FT") || txtJiga.Text.Contains("M_PT") || txtJiga.Text.Contains("M_RC") || txtJiga.Text.Contains("M_LASER") || txtJiga.Text.Contains("AUTO_OBA"))
             {
                 if (txtJiga.Text.Contains("M_FT")) { StationGroup = "FT"; }
                 else if (txtJiga.Text.Contains("M_PT")) { StationGroup = "PT"; }
