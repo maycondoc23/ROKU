@@ -1,5 +1,4 @@
-﻿using SentinelaRoku.Entity;
-using SentinelaRoku.ServiceReferenceTEST;
+﻿using SentinelaRoku.ServiceReferenceTEST;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,18 +13,20 @@ using WebServerSFC.Classes;
 
 namespace SentinelaRoku.SendClasses_SFCDATA
 {
-    class SendLASER_SFCDATA: IDisposable
+    class SendPT_SFCATA: IDisposable
     {
         private DataTable tableErrorCode;
         private DataTable tableStation;
+
         private string operatorID;
         private string productLine;
         private string hostName;
         private string groupName;
 
+
         /*************************************************************************************************************************/
         /*--- Construtor ---*/
-        public SendLASER_SFCDATA(string id, string host, string group, DataTable stations, DataTable errorCodes)
+        public SendPT_SFCATA(string id, string host, string group, DataTable stations, DataTable errorCodes)
         {
             operatorID = id;
             productLine = ConfigurationManager.AppSettings["PRODUCT_LINE"];
@@ -40,18 +41,18 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Analisa a mensagem recebida do teste e executa a ação correspondente ---*/
-        public RegMessageAnalysis messageAnalysis(string Receive)
+        public List<object> messageAnalysis(string Receive)
         {
-            RegMessageAnalysis regMessageAnalysis = new RegMessageAnalysis();
+            List<object> resultList = new List<object>();
 
-            using (var writeLog = new WriteLog())
-            {
-                writeLog.WriteLogFile($"Mensagem recebidado do teste: {Receive}");
-            }
+            bool resultTest = false;
+            string testAnswer = string.Empty;
 
             /*--- Análise ---*/
             try
             {
+                //string message = Receive.Substring(3);
+
                 if (Receive.Contains("1>>")) //Consulta no WebService
                 {
                     string message = Receive.Substring(3);
@@ -61,20 +62,6 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     string SN = componetMessage[0];
                     string HostNameTest = componetMessage[1];
                     string GroupNameTest = componetMessage[2];
-
-                    if (HostNameTest.Contains("--"))
-                    {
-                        string hostNameOld = HostNameTest;
-
-                        HostNameTest = HostNameTest.Replace("--", string.Empty);
-
-                        string hostNameNew = HostNameTest;
-
-                        using (var writeLog = new WriteLog())
-                        {
-                            writeLog.WriteLogFile($"Replace HostName: {hostNameOld}(Old) to {hostNameNew}(New)");
-                        }
-                    }
 
                     DataRow[] consultHostName = tableStation.Select($"Test_Station LIKE '%{HostNameTest}%'");
 
@@ -86,11 +73,9 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                         if (Hostname == hostName)
                         {
                             string PN = string.Empty;
-                            string CSN = string.Empty;
-                            string CESN = string.Empty;
 
                             /*--- Consulta no WebService ---*/
-                            var webservice = new WebServiceMethods();  
+                            var webservice = new WebServiceMethods();
 
                             var resultCheckStatus = webservice.SFIS_CHECK_STATUS(SN, GroupName);
 
@@ -104,76 +89,57 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                             {
                                 var resultGetData = webservice.SFIS_GET_DATA(SN);
 
-                                using (var writeLog = new WriteLog())
-                                {
-                                    writeLog.WriteLogFile($"Passo 1 - Enviado Para WebService SFIS_GET_DATA: SN: {SN}");
-                                    writeLog.WriteLogFile($"Passo 1 - Enviado Para WebService SFIS_GET_DATA: StatusCode: {resultGetData.StatusCode}, ErrorMessage: {resultGetData}");
-                                }
-
                                 string GetDataErrorMessage = resultGetData.ErrorMessage;
 
                                 PN = resultGetData.Configuration.Sku;
-                                DeviceDetail[] details = resultGetData.Configuration.DeviceDetails;
 
-                                foreach (DeviceDetail detail in details)
-                                {
-                                    if (detail.Key == "CSN")
-                                    {
-                                        CSN = detail.Value;
-                                    }
-
-                                    if (detail.Key == "CESN")
-                                    {
-                                        CESN = detail.Value;
-                                    }
-                                }
 
                                 if (resultGetData.StatusCode == "0") //check OK
                                 {
-                                    regMessageAnalysis.resultTest = true;
+                                    resultTest = true;
 
-                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                                    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                                 }
                                 else if (resultGetData.StatusCode == "1")   //check not OK
                                 {
-                                    regMessageAnalysis.resultTest = false;
 
-                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{GetDataErrorMessage}";
+                                    resultTest = false;
+
+                                    testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{GetDataErrorMessage}";
                                 }
                             }
                             else
                             {
-                                regMessageAnalysis.resultTest = false;
+                                resultTest = false;
 
-                                regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#{statusMessage}";
+                                testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{statusMessage}";
                             }
 
 
-                            //testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                            //testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
 
-                            SendMessageToTest(regMessageAnalysis.testAnswer, "start");
+                            SendMessageToTest(testAnswer, "start");
 
                             /*-----------------------------------------------------------------------------------------------------------------------*/
                         }
                         else
                         {
-                            regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},PNNAME=#Wrong hostname!";
-
                             SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!", "start");
+
                             MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {hostName}" + Environment.NewLine + $"Received hostname: {Hostname}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                         }
                     }
                     else
                     {
-                        regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},PNNAME=#Wrong hostname!";
-
                         SendMessageToTest($"1>>SERIALNO={SN},PNNAME=#Wrong hostname!", "start");
+
                         MessageBox.Show("Wrong hostname received!" + Environment.NewLine + $"Selected hostname: {HostNameTest}" + Environment.NewLine + $"Received hostname: {HostNameTest}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {
                     string message = Receive.Substring(3);
+
                     message = message.Replace(';', ',');
                     string[] componetMessage = message.Split(',');
 
@@ -184,42 +150,94 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                     if (ResultTest == "PASS")
                     {
-                        /*--- Resposta para o teste ---*/
-                        regMessageAnalysis.testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";
-
-                        SendMessageToTest(regMessageAnalysis.testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
-
-                        /*-----------------------------------------------------------------------------------------------------------------------*/
-
-                        var webservice = new WebServiceMethods();
-
-
-                        /*--- Logout do SN ---*/
-
-                        using (var writeLog = new WriteLog())
+                        if ((CSN != null) && (CSN != string.Empty) && (CESN != null) && (CESN != string.Empty))
                         {
-                            writeLog.WriteLogFile($"Passo 2 - Enviado Para WebService SFIS_LOGOUT: SN: {SN}, operatorID: {operatorID}, productLine: {productLine}, groupName: {groupName}, hostName: {hostName}");
+                            /*--- Resposta para o teste ---*/
+                            testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";
+
+                            SendMessageToTest(testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
+
+                            /*-----------------------------------------------------------------------------------------------------------------------*/
+
+                            var webservice = new WebServiceMethods();
+
+                            /*--- Envio dos dados de CSN e CESN ---*/
+                            List<DeviceDetail> listDetail = new List<DeviceDetail>();
+
+                            listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
+                            listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
+
+                            var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
+
+                            if (send_CSN_CESN.StatusCode == "1")
+                            {
+                                File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
+
+                                using (var writeLog = new WriteLog())
+                                {
+                                    writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
+                                }
+                            }
+
+                            /*-----------------------------------------------------------------------------------------------------------------------*/
+
+
+                            /*--- Logout do SN ---*/
+                            var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
+
+                            if (resultLogout.StatusCode == "1")
+                            {
+                                File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
+
+                                using (var writeLog = new WriteLog())
+                                {
+                                    writeLog.WriteLogFile(resultLogout.ErrorMessage);
+                                }
+                            }
+
+                            /*-----------------------------------------------------------------------------------------------------------------------*/
+                        }
+                        else
+                        {
+                            /*--- Resposta para o teste ---*/
+                            testAnswer = $"2>>SERIALNO={SN}#Empty CSN or Empty CESN";
+
+                            SendMessageToTest(testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
+
+                            /*-----------------------------------------------------------------------------------------------------------------------*/
                         }
 
-                        var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
-
-                        using (var writeLog = new WriteLog())
-                        {
-                            writeLog.WriteLogFile($"Passo 2 - Recebido WebService SFIS_LOGOUT: StatusCode: {resultLogout.StatusCode}, ErrorMessage: {resultLogout.ErrorMessage}");
-                        }
-
-                        /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
                     else // Test result Fail
                     {
                         /*--- Resposta para o teste ---*/
-                        regMessageAnalysis.testAnswer = $"2>>SERIALNO={SN}#{ResultTest}";
+                        testAnswer = $"2>>SERIALNO={SN}#{ResultTest}";
 
-                        SendMessageToTest(regMessageAnalysis.testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
+                        SendMessageToTest(testAnswer, "end"); //devemos devolver a resposta para o teste no step 2 o mais rapido possível, pode haver problema de timeout
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
 
                         var webservice = new WebServiceMethods();
+
+                        /*--- Envio dos dados de CSN e CESN ---*/
+                        //List<DeviceDetail> listDetail = new List<DeviceDetail>();
+
+                        //listDetail.Add(new DeviceDetail { Key = "CSN", Value = CSN });
+                        //listDetail.Add(new DeviceDetail { Key = "CESN", Value = CESN });
+
+                        //var send_CSN_CESN = webservice.SFIS_SEND_DATA(new DeviceLog { MotherBoardSerialNumber = SN, Details = listDetail.ToArray() });
+
+                        //if (send_CSN_CESN.StatusCode == "1")
+                        //{
+                        //    File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", send_CSN_CESN.ErrorMessage);
+
+                        //    using (var writeLog = new WriteLog())
+                        //    {
+                        //        writeLog.WriteLogFile(send_CSN_CESN.ErrorMessage);
+                        //    }
+                        //}
+
+                        /*-----------------------------------------------------------------------------------------------------------------------*/
 
                         /*--- Logout do SN ---*/
                         DataRow[] consultErrorCode = tableErrorCode.Select($"Description LIKE '%{ResultTest}%'");
@@ -231,36 +249,39 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         string ErrorCode = consultErrorCode[0]["CODE"].ToString();
 
-                        using (var writeLog = new WriteLog())
-                        {
-                            writeLog.WriteLogFile($"Passo 2 - Enviado Para WebService SFIS_LOGOUT: SN: {SN}, operatorID: {operatorID}, productLine: {productLine}, groupName: {groupName}, hostName: {hostName}, ErrorCode: {ErrorCode}");
-                        }
-
                         var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, ErrorCode);
 
-                        using (var writeLog = new WriteLog())
+                        if (resultLogout.StatusCode == "1")
                         {
-                            writeLog.WriteLogFile($"Passo 2 - Recebido WebService SFIS_LOGOUT: StatusCode: {resultLogout.StatusCode}, ErrorMessage: {resultLogout.ErrorMessage}");
+                            File.WriteAllText($@"{Directory.GetCurrentDirectory()}\LogWebService\LogWebService.txt", resultLogout.ErrorMessage);
+
+                            using (var writeLog = new WriteLog())
+                            {
+                                writeLog.WriteLogFile(resultLogout.ErrorMessage);
+                            }
                         }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
                     }
-
                 }
             }
             catch (Exception ex)
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendLASER_SFCDATA.cs Flag-1: {ex.Message}");
+                    writeLog.WriteLogFile($"SendPT_SFCATA.cs Flag-1: {ex.Message}");
                 }
-                MessageBox.Show($"SendLASER_SFCDATA.cs Flag-1: {ex.Message}", "SentinelaRoku ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendPT_SFCATA.cs Flag-1: {ex.Message}", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);
                 throw;
             }
+
             /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
-            return regMessageAnalysis;
+            resultList.Add(resultTest);
+            resultList.Add(testAnswer);
+
+            return resultList;
         }
 
         /*************************************************************************************************************************/
@@ -268,9 +289,12 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Escreve o arquivo de resposta para o teste na pasta C:\SFCDATA_IN ---*/
-        public RegMessageAnalysis SendMessageToTest(string sendMessage, string testStage)
+        public List<object> SendMessageToTest(string sendMessage, string testStage)
         {
-            RegMessageAnalysis regMessageAnalysis = new RegMessageAnalysis();
+            List<object> resultList = new List<object>();
+
+            bool resultTest = false;
+            string resultMessage = string.Empty;
 
 
             /*--- Constroi o arquivo de resposta e salva na pasta do teste ---*/
@@ -282,24 +306,27 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt; Contendo: {sendMessage}");
+                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt");
                 }
             }
             catch (Exception ex)
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendLASER_SFCDATA.cs Flag-2: {ex.Message}");
+                    writeLog.WriteLogFile($"SendPT_SFCATA.cs Flag-2: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendLASER_SFCDATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendPT_SFCATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
 
             /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
-            return regMessageAnalysis;
+            resultList.Add(resultTest);
+            resultList.Add(resultMessage);
+
+            return resultList;
         }
 
         /*************************************************************************************************************************/
@@ -307,11 +334,12 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Destructor ---*/
-        ~SendLASER_SFCDATA()
+        ~SendPT_SFCATA()
         {
             this.Dispose();
         }
         /*************************************************************************************************************************/
+
 
         /*************************************************************************************************************************/
         /*--- Dispose ---*/

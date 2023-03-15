@@ -15,7 +15,6 @@ using WebServerSFC.Classes;
 using System.Collections.Generic;
 using System.Globalization;
 using SentinelaRoku.SendClasses_SFCDATA;
-using SentinelaRoku.Entity;
 
 namespace WebServerSFC
 {
@@ -393,7 +392,6 @@ namespace WebServerSFC
 
                 if (fileLog.Contains(">>") && fileLog.Contains("#")) //indica que a mensagem partiu do teste para ser verificada no webservice
                 {
-                    RegMessageAnalysis regMessageAnalysis = new RegMessageAnalysis();
 
                     switch (StationGroup)
                     {
@@ -401,7 +399,7 @@ namespace WebServerSFC
 
                             using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                             {
-                                regMessageAnalysis = sendPT_SFCATA.messageAnalysis(fileLog);
+                                sendPT_SFCATA.messageAnalysis(fileLog);
                             }
 
                             break;
@@ -410,7 +408,7 @@ namespace WebServerSFC
 
                             using (SendFT_SFCDATA sendFT_SFCDATA = new SendFT_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                             {
-                                regMessageAnalysis = sendFT_SFCDATA.messageAnalysis(fileLog);
+                                sendFT_SFCDATA.messageAnalysis(fileLog);
                             }
 
                             break;
@@ -419,7 +417,7 @@ namespace WebServerSFC
 
                             using (SendRC_SFCDATA sendRC_SFCDATA = new SendRC_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                             {
-                                regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
+                                sendRC_SFCDATA.messageAnalysis(fileLog);
                             }
 
                             break;
@@ -428,7 +426,7 @@ namespace WebServerSFC
 
                             using (SendLASER_SFCDATA sendLASE_SFCDATAR = new SendLASER_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                             {
-                                regMessageAnalysis = sendLASE_SFCDATAR.messageAnalysis(fileLog);
+                                sendLASE_SFCDATAR.messageAnalysis(fileLog);
                             }
 
                             break;
@@ -437,7 +435,7 @@ namespace WebServerSFC
 
                             using (SendAUTO_OBA_SFCDATA sendAUTO_OBA_SFCDATA = new SendAUTO_OBA_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                             {
-                                regMessageAnalysis = sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
+                                sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
                             }
 
                             break;
@@ -450,6 +448,12 @@ namespace WebServerSFC
                             }
                             break;
                     }
+
+                }
+
+                using (var writeLog = new WriteLog())
+                {
+                    writeLog.WriteLogFile($"Mensagem recebidado do teste: {fileLog}");
                 }
             }
             catch (Exception ex)

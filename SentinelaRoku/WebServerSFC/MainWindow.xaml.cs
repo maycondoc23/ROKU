@@ -73,7 +73,7 @@ namespace WebServerSFC
             timer.Interval = TimeSpan.FromSeconds(5);
             timer.Start();
 
-            this.Title = $"SENTINELA ROKU 8.0.12 - Check Status";
+            this.Title = $"SENTINELA ROKU 8.0.0  - Check Status";
             txtJiga.Focus();
         }
 
@@ -360,9 +360,9 @@ namespace WebServerSFC
         /*--- Inicia a operação de interfaceamento com o WebService ---*/
         private void btLogin_Click(object sender, RoutedEventArgs e)
         {
-            HostName = txtJiga.Text.Trim();
-            OperatorId = txtUser.Text.Trim();
-            OperatorPassWord = txtPassWord.Password.ToString().Trim();
+            HostName = txtJiga.Text;
+            OperatorId = txtUser.Text;
+            OperatorPassWord = txtPassWord.Password.ToString();
 
             string station = string.Empty;
 
