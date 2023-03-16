@@ -73,7 +73,7 @@ namespace WebServerSFC
             timer.Interval = TimeSpan.FromSeconds(5);
             timer.Start();
 
-            this.Title = $"SENTINELA ROKU 8.0.12 - Check Status";
+            this.Title = $"SENTINELA ROKU 8.0.14 - Check Status";
             txtJiga.Focus();
         }
 

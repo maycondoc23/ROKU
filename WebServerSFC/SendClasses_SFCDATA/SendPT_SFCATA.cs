@@ -135,6 +135,8 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                                 regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#{statusMessage}";
 
+                                MessageBox.Show($"StatusCode: {resultCheckStatus.StatusCode} {Environment.NewLine} Message: {resultCheckStatus.ErrorMessage}", "Route Verification", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
                             }
 
                             //testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
