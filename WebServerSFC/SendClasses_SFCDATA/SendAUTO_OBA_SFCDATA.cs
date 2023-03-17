@@ -45,7 +45,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
             using (var writeLog = new WriteLog())
             {
-                writeLog.WriteLogFile($"Mensagem recebidado do teste: {Receive}");
+                writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Mensagem recebidado do teste: {Receive}");
             }
 
             /*--- Análise ---*/
@@ -71,7 +71,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         using (var writeLog = new WriteLog())
                         {
-                            writeLog.WriteLogFile($"Passo 1 - Replace HostName: {hostNameOld}(Old) to {hostNameNew}(New)");
+                            writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Passo 1 - Replace HostName: {hostNameOld}(Old) to {hostNameNew}(New)");
                         }
                     }
 
@@ -202,14 +202,14 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         using (var writeLog = new WriteLog())
                         {
-                            writeLog.WriteLogFile($"Passo 2 - Enviado Para WebService SFIS_LOGOUT: SN: {SN}, operatorID: {operatorID}, productLine: {productLine}, groupName: {groupName}, hostName: {hostName}");
+                            writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Passo 2 - Enviado Para WebService SFIS_LOGOUT: SN: {SN}, operatorID: {operatorID}, productLine: {productLine}, groupName: {groupName}, hostName: {hostName}");
                         }
 
                         var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
 
                         using (var writeLog = new WriteLog())
                         {
-                            writeLog.WriteLogFile($"Passo 2 - Recebido WebService SFIS_LOGOUT: StatusCode: {resultLogout.StatusCode}, ErrorMessage: {resultLogout.ErrorMessage}");
+                            writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Passo 2 - Recebido WebService SFIS_LOGOUT: StatusCode: {resultLogout.StatusCode}, ErrorMessage: {resultLogout.ErrorMessage}");
                         }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
@@ -237,14 +237,14 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         using (var writeLog = new WriteLog())
                         {
-                            writeLog.WriteLogFile($"Passo 2 - Enviado Para WebService SFIS_LOGOUT: SN: {SN}, operatorID: {operatorID}, productLine: {productLine}, groupName: {groupName}, hostName: {hostName}, ErrorCode: {ErrorCode}");
+                            writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Passo 2 - Enviado Para WebService SFIS_LOGOUT: SN: {SN}, operatorID: {operatorID}, productLine: {productLine}, groupName: {groupName}, hostName: {hostName}, ErrorCode: {ErrorCode}");
                         }
 
                         var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, ErrorCode);
 
                         using (var writeLog = new WriteLog())
                         {
-                            writeLog.WriteLogFile($"Passo 2 - Recebido WebService SFIS_LOGOUT: StatusCode: {resultLogout.StatusCode}, ErrorMessage: {resultLogout.ErrorMessage}");
+                            writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Passo 2 - Recebido WebService SFIS_LOGOUT: StatusCode: {resultLogout.StatusCode}, ErrorMessage: {resultLogout.ErrorMessage}");
                         }
 
                         /*-----------------------------------------------------------------------------------------------------------------------*/
@@ -256,7 +256,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendAUTO_OBA_SFCDATA.cs Flag-1: {ex.Message}");
+                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendAUTO_OBA_SFCDATA.cs Flag-1: {ex.Message}");
                 }
 
                 MessageBox.Show($"SendAUTO_OBA_SFCDATA.cs Flag-1: {ex.Message}", "SentinelaRoku ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -287,14 +287,14 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($@"File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt; Contendo: {sendMessage}");
+                    writeLog.WriteLogFile($@"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> File sent for testing: {ConfigurationManager.AppSettings["SFCDATA_IN"]}\{DateTime.Now.ToString("yyyyMMddHHmmssfffff")}_{testStage}.txt; Contendo: {sendMessage}");
                 }
             }
             catch (Exception ex)
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"SendAUTO_OBA_SFCDATA.cs Flag-2: {ex.Message}");
+                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendAUTO_OBA_SFCDATA.cs Flag-2: {ex.Message}");
                 }
 
                 MessageBox.Show($"SendAUTO_OBA_SFCDATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
