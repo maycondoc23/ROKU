@@ -41,6 +41,11 @@ namespace WebServerSFC.Classes
                     path_test = "Path_Test_AUTO_OBA";
                     directory_test = "Directory_Test_AUTO_OBA";
                 }
+                else if (StationGroup == "CAL")
+                {
+                    path_test = "Directory_Test_CAL";
+                    directory_test = "Directory_Test_CAL";
+                }
 
 
                 var myProcess = new Process();

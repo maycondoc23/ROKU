@@ -52,6 +52,7 @@ namespace WebServerSFC
         {
             InitializeComponent();
 
+
             LoadDataTableHostnamesROKU();
 
             DataRow[] consultHostName = tableStation.Select($"SFC_HostName LIKE '%{MainWindow.HostName}%'");
@@ -113,6 +114,10 @@ namespace WebServerSFC
                 {
                     fileLogMonitor = ConfigurationManager.AppSettings["LogFilePT"];
                 }
+                else if (Hostname.Contains("CAL"))
+                {
+                    fileLogMonitor = ConfigurationManager.AppSettings["LogFileCAL"];
+                }
                 else if (Hostname.Contains("FT"))
                 {
                     fileLogMonitor = ConfigurationManager.AppSettings["LogFileFT"];
@@ -128,7 +133,7 @@ namespace WebServerSFC
                 else if (Hostname.Contains("OBA"))
                 {
                     fileLogMonitor = ConfigurationManager.AppSettings["LogFileOBA"];
-                }
+                }    
 
                 MonitorarArquivos_SFCDATA_OUT(ConfigurationManager.AppSettings["SFCDATA_OUT"], "*.txt", OnFileCreated);
 
@@ -398,6 +403,15 @@ namespace WebServerSFC
                     switch (StationGroup)
                     {
                         case "PT":
+
+                            using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            {
+                                regMessageAnalysis = sendPT_SFCATA.messageAnalysis(fileLog);
+                            }
+
+                            break;
+                                
+                        case "CAL":
 
                             using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                             {

@@ -52,12 +52,11 @@
         </Button>
         <TextBox x:Name="txtJiga"
             Style="{StaticResource MaterialDesignFilledTextBox}"
-            VerticalAlignment="Top"
             AcceptsReturn="False"
             TextWrapping="Wrap"
             MaxWidth="400"
             materialDesign:HintAssist.Hint="Jig            "
-            IsEnabled="{Binding IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}" Margin="305,71,277,0" FontSize="16" Height="64" TextAlignment="Center" KeyDown="txtJiga_KeyDown"/>
+            IsEnabled="{Binding IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}" Margin="305,71,277,338" FontSize="16" TextAlignment="Center" KeyDown="txtJiga_KeyDown" TextChanged="txtJiga_TextChanged_1"/>
         <TextBlock
             FontSize="46"
             Text="SENTINELA ROKU"

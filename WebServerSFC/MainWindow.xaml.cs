@@ -164,10 +164,11 @@ namespace WebServerSFC
         /*--- Descrição ---*/
         public bool CheckHostNameIsValid()
         {
-            if (txtJiga.Text.Contains("M_FT") || txtJiga.Text.Contains("M_PT") || txtJiga.Text.Contains("M_RC") || txtJiga.Text.Contains("M_LASER") || txtJiga.Text.Contains("AUTO_OBA"))
+            if (txtJiga.Text.Contains("M_FT") || txtJiga.Text.Contains("M_PT") || txtJiga.Text.Contains("M_CAL") || txtJiga.Text.Contains("M_RC") || txtJiga.Text.Contains("M_LASER") || txtJiga.Text.Contains("AUTO_OBA"))
             {
                 if (txtJiga.Text.Contains("M_FT")) { StationGroup = "FT"; }
                 else if (txtJiga.Text.Contains("M_PT")) { StationGroup = "PT"; }
+                else if (txtJiga.Text.Contains("M_CAL")) { StationGroup = "CAL"; }
                 else if (txtJiga.Text.Contains("M_RC")) { StationGroup = "RC"; }
                 else if (txtJiga.Text.Contains("M_LASER")) { StationGroup = "LASER"; }
                 else if (txtJiga.Text.Contains("AUTO_OBA")) { StationGroup = "AUTO_OBA"; }
@@ -367,6 +368,7 @@ namespace WebServerSFC
             string station = string.Empty;
 
             if (txtJiga.Text.Contains("M_FT")) { station = "Path_Test_FT"; }
+            else if (txtJiga.Text.Contains("M_CAL")) { station = "Path_Test_CAL"; }
             else if (txtJiga.Text.Contains("M_PT")) { station = "Path_Test_PT"; }
             else if (txtJiga.Text.Contains("M_RC")) { station = "Path_Test_RC"; }
             else if (txtJiga.Text.Contains("M_LASER")) { station = "Path_Test_LASER"; }
@@ -472,6 +474,16 @@ namespace WebServerSFC
                 MessageBox.Show($"MainWindow.xaml.cs Flag-6: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
+        }
+
+        private void txtJiga_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+        }
+
+        private void txtJiga_TextChanged_1(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
         }
 
         /*************************************************************************************************************************/
