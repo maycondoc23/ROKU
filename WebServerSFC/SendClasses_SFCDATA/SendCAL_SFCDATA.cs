@@ -132,7 +132,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                                 {
                                     regMessageAnalysis.resultTest = true;
 
-                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                                 }
                                 else if (resultGetData.StatusCode == "1")   //check not OK
                                 {
@@ -182,8 +182,8 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     string[] componetMessage = message.Split(',');
 
                     string SN = componetMessage[0];
-                    string CSN = componetMessage[1].Split('=')[1];
-                    string CESN = componetMessage[2].Split('=')[1];
+                    string PCNAME = componetMessage[1].Split('=')[1];
+                    string FW = componetMessage[2].Split('=')[1];
                     string ResultTest = componetMessage[3].Split('#')[1];
 
                     if (ResultTest == "PASS")
@@ -257,10 +257,10 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendFT_SFCDATA.cs Flag-1: {ex.Message}");
+                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendCAL_SFCDATA.cs Flag-1: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendFT_SFCDATA.cs Flag-1: {ex.Message}", "SentinelaRoku ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendCAL_SFCDATA.cs Flag-1: {ex.Message}", "SentinelaRoku ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
             /*-----------------------------------------------------------------------------------------------------------------------*/
@@ -298,10 +298,10 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendFT_SFCDATA.cs Flag-2: {ex.Message}");
+                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendCAL_SFCDATA.cs Flag-2: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendFT_SFCDATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendCAL_SFCDATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
 

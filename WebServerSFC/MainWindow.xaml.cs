@@ -19,6 +19,8 @@ namespace WebServerSFC
     {
         public static string HostName = "";
 
+        public static string productname = "";
+
         public static string OperatorId = "";
 
         public static string OperatorPassWord = "";
@@ -364,8 +366,12 @@ namespace WebServerSFC
             HostName = txtJiga.Text.Trim();
             OperatorId = txtUser.Text.Trim();
             OperatorPassWord = txtPassWord.Password.ToString().Trim();
-
+            productname = Produto.SelectionBoxItem.ToString().Trim();
             string station = string.Empty;
+
+
+
+
 
             if (txtJiga.Text.Contains("M_FT")) { station = "Path_Test_FT"; }
             else if (txtJiga.Text.Contains("M_CAL")) { station = "Path_Test_CAL"; }
@@ -482,6 +488,11 @@ namespace WebServerSFC
         }
 
         private void txtJiga_TextChanged_1(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+
+        }
+
+        private void PRODUCTNAME_SelectionChanged_1(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
 
         }

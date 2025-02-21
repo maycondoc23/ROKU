@@ -1,0 +1,212 @@
+------------------------------------------------------
+ITEM=ID[1]NAME[Check QR code hosing ];
+MO:2144011865;
+MO need check housing:2144011865;
+MO need check housing:2144011873;
+MO need check housing:2144011875;
+MO need check housing:2144011877;
+QR code Housing: 0105;
+Item test time:1.585 s;
+ITEM=ID[1]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[2]NAME[Check Question QR code];
+Item test time:47.626 s;
+ITEM=ID[2]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[3]NAME[Check SN + FW + MAC];
+Connect to HDMI server;
+capture bmp ok;
+Read ;
+SN: S1C33510KA6V;
+FW: JFF.06E00090A;
+WIFI MAC: 345E08FF8EAE;
+SFIS ;
+SN: S1C33510KA6V;
+FW: JFF.06E00090A;
+WIFI MAC: 345E08FF8EAE;
+Check SN Pass;
+Check FW Pass;
+Check Wifi Mac Pass;
+Scan QR code success;
+Item test time:2.742 s;
+ITEM=ID[3]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[4]NAME[Check question connect Wifi];
+Item test time:61.620 s;
+ITEM=ID[4]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[5]NAME[Check Image Model number];
+CMD: 981,300,84,30;
+send to server: ROKU_BMP
+;
+Result: 0.89;
+Item test time:1.653 s;
+ITEM=ID[5]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[6]NAME[Check Out of box audit];
+CMD: 1742,57,101,48;
+send to server: ROKU_BMP
+;
+Result: 0.98;
+Item test time:1.659 s;
+ITEM=ID[6]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[7]NAME[ Save picture ];
+capture bmp ok;
+Item test time:1.262 s;
+ITEM=ID[7]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[8]NAME[ Press Reset Button];
+Connect to HDMI server;
+send to server: ROKU_BMP
+;
+Receive: result=0.8598;
+send to server: ROKU_BMP
+;
+Receive: result=0.8598;
+send to server: ROKU_BMP
+;
+Receive: result=0.8597;
+send to server: ROKU_BMP
+;
+Receive: result=0.0223;
+send to server: ROKU_BMP
+;
+Receive: result=0.5172;
+send to server: ROKU_BMP
+;
+Receive: result=0.5188;
+send to server: ROKU_BMP
+;
+Receive: result=0.5194;
+send to server: ROKU_BMP
+;
+Receive: result=0.5174;
+send to server: ROKU_BMP
+;
+Receive: result=0.5230;
+send to server: ROKU_BMP
+;
+Receive: result=0.5171;
+send to server: ROKU_BMP
+;
+Receive: result=0.5178;
+send to server: ROKU_BMP
+;
+Receive: result=0.5239;
+send to server: ROKU_BMP
+;
+Receive: result=0.5168;
+send to server: ROKU_BMP
+;
+Receive: result=0.5189;
+send to server: ROKU_BMP
+;
+Receive: result=0.8453;
+send to server: ROKU_BMP
+;
+Receive: result=0.9480;
+Item test time:30.744 s;
+ITEM=ID[8]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[9]NAME[Check Reset Remote];
+Spec: Transmitting EnablePairing IR code;
+Open comport pass;
+Read from comport:[000.000000] Roku LT OS. Copyright 2021-2023, Roku, Inc. All rights reserved.
+[000.000000]   LTCore v. RokuLT-000.00S00092A-3b7dd5d9-blue_ridge-bl70x.bl702l-20241010
+
+
+   |\              ___    __     _     __   ___
+   | \ |    |   | |      |  \ | | \   /  \ |
+ \ | / |    |   | |      |   || |  \ |     |
+  \|/  |    |   | |__    |  / | |   ||     |__
+  /|\  |    |   | |      |/   | |   ||  ___|
+ / | \ |    |   | |      |\   | |   ||    ||
+   | / |    |   | |      | \  | |  / |    ||
+   |/  |___ |___| |___   |  \ | |_/   \__/ |___
+
+             Conquer the wireless world, just like King Harald! 
+
+[39m[000.364334][rcu.app.boot.reason] Boot reason: 3 Software Reset[39m
+[39m[000.412681][bl70x.drv.keyinput.enable] true[39m
+[39m[000.414559][bl70x.sdk.flash.isevb] 0[39m
+[39m[000.425217][bl70x.drv.keyinput.init.keymap.model] dvt4[39m
+[39m[000.434283][bl70x.sdk.irq.register] irq#: 55[39m
+[39m[000.440968][dev.efuse.init] [39m
+[39m[000.448664][bl70x.drv.efuse.chip.stepping] A1[39m
+[39m[000.456499][dev.efuse.get.handle] [39m
+[39m[000.463182][dev.gpio.init] [39m
+[39m[000.470824][bl70x.drv.gpio.libinit.begin] LibInit[39m
+[39m[000.472770][bl70x.sdk.flash.isevb] 0[39m
+[39m[000.474627][bl70x.sdk.flash.isevb] 0[39m
+[39m[000.476319][bl70x.drv.gpio.init.gpio.board] board=dvt4, resource_idx=dvt4, cpu=new[39m
+[39m[000.479841][bl70x.drv.gpio.init.gpio.named.pin] pair=13[39m
+[39m[000.481968][bl70x.drv.gpio.init.gpio.named.pin] warn=16[39m
+[39m[000.484051][bl70x.drv.gpio.init.gpio.named.pin] buzz=25[39m
+[39m[000.486097][bl70x.drv.gpio.init.gpio.named.pin] ir=22[39m
+[39m[000.488118][bl70x.drv.gpio.init.gpio.named.pin] pump=30[39m
+[39m[000.490124][bl70x.drv.gpio.init.gpio.named.pin] mpwr=9[39m
+[39m[000.492125][bl70x.drv.gpio.init.gpio.named.pin] mpos=10[39m
+[39m[000.494124][bl70x.drv.gpio.init.gpio.named.pin] mneg=11[39m
+[39m[000.495930][bl70x.drv.gpio.init.gpio.named.value] pair_active=1[39m
+[39m[000.503745][dev.gpio.get.handle] [39m
+[39m[000.510543][dev.ir.init] [39m
+[39m[000.523818][dev.ir.get.handle] [39m
+[39m[000.530701][dev.adc.init] [39m
+[39m[000.574103][bl70x.drv.crypto.libinit.begin] LibInit[39m
+[39m[000.594659][dev.gpio.get.handle] [39m
+[39m[000.596836][dev.amic.gpio] mpwr = 9, amic_pos_ch = 4, amic_neg_ch = 5
+[39m[39m[000.630002][bl70x.drv.flash.chip] A1[39m
+[39m[000.631727][bl70x.drv.flash.active.partition] Running image from flash partition "fw1"[39m
+[39m[000.688338][rcu.app.ir.codes] using_ir_codes:stb[39m
+[39m[000.708460][rcu.cmd.ctor] [39m
+[39m[000.715254][ltsystemshell.enabled] Unsecured unit, LTSystemShell enabled[39m
+[39m[000.755991][rcu.app.ctor] Beginning (APP mode) localver: main.9999, build ver: mfg.00092[39m
+[39m[000.757976][rcu.app.ble] Starting BLE[39m
+[39m[000.759627][rcu.ble.wrap.ble.wrap] StartBle[39m
+[39m[000.814989][rcu.ble.wrap.create.pair.settings] Unable to get rcu_paired so creating...[39m
+[39m[000.827461][rcu.ble.wrap.peer.mac] 34:5E:08:FF:8E:AF[39m
+[39m[000.839481][bl70x.sdk.flash.isevb] 0[39m
+[39m[000.841179][bl70x.ble.controller.new.board] dvt4[39m
+[39m[000.843279][dev.efuse.get.handle] [39m
+[39m[000.846461][bl70x.ble.controller.bl70x.ble.controller.mac] 9C:F1:D4:00:3D:6F[39m
+[39m[000.853439][bl70x.sdk.irq.pending_clear] irq#: 72[39m
+[39m[000.855090][bl70x.sdk.irq.register] irq#: 72[39m
+[39m[000.856957][bl70x.ble.controller.register.callbacks] ![39m
+[39m[000.895479][bl70x.drv.keyinput.start.notification] start[39m
+[39m[000.904583][bl70x.ble.controller.hci.send.cmd] opcode:0xC03, param_len:0[39m
+[39m[000.911097][bl70x.sdk.irq.register] irq#: 3[39m
+[39m[001.113463][bl70x.ble.controller.hci.send.cmd] opcode:0x1001, param_len:0[39m
+[39m[001.119831][bl70x.ble.controller.hci.send.cmd] opcode:0x1003, param_len:0[39m
+[39m[001.126299][bl70x.ble.controller.hci.send.cmd] opcode:0xC01, param_len:8[39m
+[39m[001.132874][bl70x.ble.controller.hci.send.cmd] opcode:0xC63, param_len:8[39m
+[39m[001.139548][bl70x.ble.controller.hci.send.cmd] opcode:0x2001, param_len:8[39m
+[39m[001.146136][bl70x.ble.controller.hci.send.cmd] opcode:0x2002, param_len:0[39m
+[39m[001.152660][bl70x.ble.controller.hci.send.cmd] opcode:0x2003, param_len:0[39m
+[39m[001.159132][bl70x.ble.controller.hci.send.cmd] opcode:0x1009, param_len:0[39m
+[39m[001.165791][bl70x.ble.controller.hci.send.cmd] opcode:0x202D, param_len:1[39m
+[39m[001.172483][bl70x.ble.controller.hci.send.cmd] opcode:0x2029, param_len:0[39m
+[39m[001.178899][bl70x.ble.controller.hci.send.cmd] opcode:0x202D, param_len:1[39m
+[39m[001.185722][bl70x.ble.controller.hci.send.cmd] opcode:0x200A, param_len:1[39m
+[39m[001.192647][bl70x.ble.controller.hci.send.cmd] opcode:0x2027, param_len:39[39m
+[39m[001.199741][bl70x.ble.controller.hci.send.cmd] opcode:0x204E, param_len:8[39m
+[39m[001.209173][rcu.ble.wrap.on.dev.evt] event: 1[39m
+[39m[001.210998][rcu.app.ble.event.system.started] System Startup[39m
+[39m[001.221043][rcu.app.pairing.initiated] Pairing Initiated[39m
+[39m[001.231014][rcu.app.pairing.start] [39m
+[39m[001.232711][rcu.app.tep.xmit] Transmitting EnablePairing IR code[39m
+[39m[001.234311][bl70x.drv.ir.xmit.nec] Transmitting NEC payload: 0xc4ea/0x39 (0xc639c4ea)[39m
+;
+REMOTE MAC: 9CF1D4003D6F;
+Found SPEC:  Transmitting EnablePairing IR code;
+Reset Remote OK;
+Item test time:17.245 s;
+ITEM=ID[9]RESULT[PASS];
+------------------------------------------------------
+Total test time:166.152 s;
+LOG=MAINFOR[S1C33510KA6V,1,,1.2,OBA-10------,166.152,01/05/2025 17:05:12,345E08FF8EAE,0105,];
+LOG=CONTENT[01/05/2025,17:07:58,SFIS_ON,,F0000000,1,0,FAIL,1.585,PASS,47.626,FAIL,,0,2.742,PASS,61.62,PASS,,0,1.653,PASS,,0,1.659,FAIL,,0,1.262,FAIL,,,,,,,0,30.744,FAIL,,,,0,17.245,];
+LOG=ERROR[];
+SFIS=SN[S1C33510KA6V]WIFIMAC0[345E08FF8EAE]WIFIMAC1[0105]PNNAME[RU9026001061]RESULT[true];CONTROL=RESULT[true];
+Sending result to sfis...;
+Sfis response pass;

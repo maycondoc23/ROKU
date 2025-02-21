@@ -72,5 +72,6 @@
             <TextBlock
       Text="SAIR" />
         </Button>
+        <Button Name="Productname_view" Content="MODEL" HorizontalAlignment="Left" Margin="10,177,0,0" VerticalAlignment="Top" Width="275" Height="36" Foreground="#DDFFFFFF"  FontSize="24" Opacity="0.645" Click="Productname_view_Click_1" IsEnabled="False"/>
     </Grid>
 </Window>

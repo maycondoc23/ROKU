@@ -182,7 +182,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                     if (ResultTest == "PASS")
                     {
-                        if ((CSN != null) && (CSN != string.Empty) && (CESN != null) && (CESN != string.Empty))
+                        if ((CSN != null) && (CSN != string.Empty) && (CESN != null) && (CESN != string.Empty) && (CESN != null) && (CESN != string.Empty))
                         {
                             /*--- Resposta para o teste ---*/
                             regMessageAnalysis.testAnswer = $"2>>SERIALNO={SN}#OK,UNIT PASS!";

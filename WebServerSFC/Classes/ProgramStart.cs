@@ -43,7 +43,7 @@ namespace WebServerSFC.Classes
                 }
                 else if (StationGroup == "CAL")
                 {
-                    path_test = "Directory_Test_CAL";
+                    path_test = "Path_Test_CAL";
                     directory_test = "Directory_Test_CAL";
                 }
 

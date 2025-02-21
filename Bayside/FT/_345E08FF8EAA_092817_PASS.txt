@@ -1,0 +1,872 @@
+------------------------------------------------------
+ITEM=ID[1]NAME[ Fixture control];
+CMD: close;
+connect AutoTC ok;
+AutoTC to UI MSG: ready
+;
+Item test time:1.696 s;
+ITEM=ID[1]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[2]NAME[ Check Factory Reset];
+CMD: ;
+Open comport pass;
+Telnet: 192.168.1.101 port: 5555 Pass;
+Write to comport: close1;
+Read from comport:close1_ok
+;
+Write to Telnet Vim4: check led blink
+;
+Read from Telnet Vim4: 
+Enter Command: check led blink
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 152, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 156, State: 0
+Value: 123, State: 0
+Value: 0, State: 1
+Value: 68, State: 1
+Value: 156, State: 2
+PASS
+;
+check reset ok;
+Write to comport: open1;
+Read from comport:open1_ok
+;
+Item test time:3.923 s;
+ITEM=ID[2]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[3]NAME[ Check UUT boot up];
+CMD: devcon64.exe find USB\Class_02;
+USB\VID_0525&PID_A4A7\6&2EB5B7C1&0&4                        : USB Serial Device (COM6);
+find dut ok;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:Initial Serial#: X03700CTDMAA
+Initial (IB) Device ID#: S1C3351TDMAA
+Initial PID override is: S1C3
+Roku UART Init
+TV/STB Mfg API Version: 1.1.8024
+
+Enter Command: ;
+Item test time:16.043 s;
+ITEM=ID[3]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[4]NAME[ Check UUT build firmware];
+CMD: get build;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: get build;
+Read from comport:get build
+
+JFF.06E00090A
+
+Enter Command: ;
+Get version: JFF.06E00090A;
+SPEC FW: JFF.06E00090A;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Item test time:0.075 s;
+ITEM=ID[4]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[5]NAME[ Check wifi mac];
+CMD: get mac wifi;
+Open COM6 PASS;
+Write to comport: get mac wifi;
+Read from comport:get mac wifi
+
+WiFi          34:5E:08:FF:8E:AA
+
+Enter Command: ;
+Get wifi mac: 34:5E:08:FF:8E:AA;
+SFIS wifi mac: 345E08FF8EAA;
+Item test time:0.037 s;
+ITEM=ID[5]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[6]NAME[ Check Bluetooth mac];
+CMD: get mac Bluetooth;
+Open COM6 PASS;
+Write to comport: get mac Bluetooth;
+Read from comport:get mac Bluetooth
+
+Bluetooth     34:5E:08:FF:8E:AB
+
+Enter Command: ;
+Get bt mac: 34:5E:08:FF:8E:AB;
+SFIS bt mac: 345E08FF8EAB;
+Item test time:0.072 s;
+ITEM=ID[6]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[7]NAME[ Check location];
+CMD: get location;
+Open COM6 PASS;
+Write to comport: get location;
+Read from comport:get location
+
+FATP Location: FX:HN
+
+Enter Command: ;
+FATP Location: FX:HN;
+Hanoi (Vietnam);
+Item test time:0.038 s;
+ITEM=ID[7]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[8]NAME[ Check DUT SN];
+CMD: get deviceid;
+Open COM6 PASS;
+Write to comport: get deviceid;
+Read from comport:get deviceid
+
+Device ID#: S1C3351TDMAA
+
+Enter Command: ;
+Read  SN: S1C3351TDMAA;
+SFIS  SN: S1C3351TDMAA;
+Item test time:0.036 s;
+ITEM=ID[8]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[9]NAME[ Read Efuse Wifi];
+CMD: iwpriv wlan0 get_efuse_dom 0x00,iwpriv wlan0 get_efuse_dom 0x01,iwpriv wlan0 get_efuse_dom 0x02,iwpriv wlan0 get_efuse_dom 0x03,iwpriv wlan0 get_efuse_dom 0x08,iwpriv wlan0 get_efuse_dom 0x09,iwpriv wlan0 get_efuse_dom 0x0a,iwpriv wlan0 get_efuse_dom 0x0b,iwpriv wlan0 get_efuse_dom 0x0c,iwpriv wlan0 get_efuse_dom 0x0d,iwpriv wlan0 get_efuse_dom 0x0e,iwpriv wlan0 get_efuse_dom 0x0f,iwpriv wlan0 get_efuse_dom 0x10,iwpriv wlan0 get_efuse_dom 0x11,iwpriv wlan0 get_efuse_dom 0x12;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x00;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x00
+
+wlan0     get_efuse_dom:0x01
+
+
+Enter Command: ;
+Read CMD 0: 0x01;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x01;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x01
+
+wlan0     get_efuse_dom:0x01
+
+
+Enter Command: ;
+Read CMD 1: 0x01;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x02;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x02
+
+wlan0     get_efuse_dom:0x01
+
+
+Enter Command: ;
+Read CMD 2: 0x01;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x03;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x03
+
+wlan0     get_efuse_dom:0x01
+
+
+Enter Command: ;
+Read CMD 3: 0x01;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x08;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x08
+
+wlan0     get_efuse_dom:0x17
+
+
+Enter Command: ;
+Read CMD 4: 0x17;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x09;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x09
+
+wlan0     get_efuse_dom:0x6c
+
+
+Enter Command: ;
+Read CMD 5: 0x6c;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x0a;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x0a
+
+wlan0     get_efuse_dom:0x77
+
+
+Enter Command: ;
+Read CMD 6: 0x77;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x0b;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x0b
+
+wlan0     get_efuse_dom:0x86
+
+
+Enter Command: ;
+Read CMD 7: 0x86;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x0c;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x0c
+
+wlan0     get_efuse_dom:0x6c
+
+
+Enter Command: ;
+Read CMD 8: 0x6c;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x0d;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x0d
+
+wlan0     get_efuse_dom:0x59
+
+
+Enter Command: ;
+Read CMD 9: 0x59;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x0e;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x0e
+
+wlan0     get_efuse_dom:0x59
+
+
+Enter Command: ;
+Read CMD 10: 0x59;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x0f;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x0f
+
+wlan0     get_efuse_dom:0x58
+
+
+Enter Command: ;
+Read CMD 11: 0x58;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x10;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x10
+
+wlan0     get_efuse_dom:0x5e
+
+
+Enter Command: ;
+Read CMD 12: 0x5e;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x11;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x11
+
+wlan0     get_efuse_dom:0x62
+
+
+Enter Command: ;
+Read CMD 13: 0x62;
+Spec != 0x00;
+ok;
+Write to comport: iwpriv wlan0 get_efuse_dom 0x12;
+Read from comport:iwpriv wlan0 get_efuse_dom 0x12
+
+wlan0     get_efuse_dom:0x5a
+
+
+Enter Command: ;
+Read CMD 14: 0x5a;
+Spec != 0x00;
+ok;
+Item test time:0.378 s;
+ITEM=ID[9]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[10]NAME[ Check wifi status];
+searching Bayside-5G,Bayside-2G;
+CMD: get wifi status;
+Open COM6 PASS;
+Write to comport: get wifi status;
+Read from comport:get wifi status
+
+    AP Name                          Signal  Security
+    Bayside-5G                          99     OPEN
+    NETGEAR72-5G                        99    SECURE
+    NETGEAR89-5G                        99    SECURE
+    Lakeport-5G                         70     OPEN
+    netflix5g                           70     OPEN
+    Foxconn-Guest                       50    SECURE
+    300307                              50    SECURE
+    NETGEAR51-5G                        50    SECURE
+    NETGEAR72                           99    SECURE
+    Bayside-2G                          99     OPEN
+    NETGEAR89                           99    SECURE
+    netflix                             70     OPEN
+    netflix5g                           50     OPEN
+    OBA1                                70    SECURE
+    Lakeport-2G                         70     OPEN
+    NETGEAR51                           50    SECURE
+    Foxconn-Guest                       30    SECURE
+    300307                              20    SECURE
+    Roku                                20    SECURE
+    300307                              20    SECURE
+    Foxconn-Guest                       20    SECURE
+    Foxconn-Guest                       10    SECURE
+    Foxconn-Guest                       10    SECURE
+    300307                              10    SECURE
+    300307                              10    SECURE
+
+Enter Command: ;
+Item test time:3.190 s;
+ITEM=ID[10]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[11]NAME[ Check 2G wireless connection status];
+CMD: wifi2g;
+Open COM6 PASS;
+Write to comport: set wifi2g on Bayside-2G;
+Read from comport:set wifi2g on Bayside-2G
+
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: do ping 192.168.1.10;
+Read from comport:do ping 192.168.1.10
+
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: set wifi2g off;
+Read from comport:set wifi2g off
+
+Command SUCCESS
+
+Enter Command: ;
+Ping Pass;
+Item test time:3.344 s;
+ITEM=ID[11]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[12]NAME[ Check 5G wireless connection status];
+CMD: wifi5g;
+Open COM6 PASS;
+Write to comport: set wifi5g on Bayside-5G;
+Read from comport:set wifi5g on Bayside-5G
+
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: do ping 192.168.1.10;
+Read from comport:do ping 192.168.1.10
+
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: set wifi5g off;
+Read from comport:set wifi5g off
+
+Command SUCCESS
+
+Enter Command: ;
+Ping Pass;
+Item test time:2.369 s;
+ITEM=ID[12]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[13]NAME[Check Led Red And White Off];
+CMD: set led off white,set led off red;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: set led off white;
+Read from comport:set led off white
+
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: set led off red;
+Read from comport:set led off red
+
+Command SUCCESS
+
+Enter Command: ;
+Read Vim4: Clear: 0
+Red: 0
+Green: 0
+Blue: 0
+;
+Spec up: 5;
+Check led off ok;
+Item test time:0.642 s;
+ITEM=ID[13]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[14]NAME[Check Led Red On];
+CMD: set led on red;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: set led on red;
+Read from comport:set led on red
+
+Command SUCCESS
+
+Enter Command: ;
+Read Vim4: Clear: 842
+Red: 771
+Green: 38
+Blue: 76
+;
+-----------------------------------------;
+Spec Clear  : 500 ~ 2000;
+Clear Test value: 842;
+Clear Test value OK;
+-----------------------------------------;
+Spec Red  : 500 ~ 2000;
+Red Test value: 771;
+Red Test value OK;
+-----------------------------------------;
+Spec Green  : 15 ~ 200;
+Green Test value: 38;
+Green Test value OK;
+-----------------------------------------;
+Spec Blue  : 50 ~ 200;
+Blue Test value: 76;
+Blue Test value OK;
+Check led on red ok;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Item test time:0.638 s;
+ITEM=ID[14]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[15]NAME[Check Led Red And White Off];
+CMD: set led off;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: set led off;
+Read from comport:set led off
+
+Command SUCCESS
+
+Enter Command: ;
+Read Vim4: Clear: 0
+Red: 0
+Green: 0
+Blue: 0
+;
+Spec up: 5;
+Check led off ok;
+Item test time:0.620 s;
+ITEM=ID[15]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[16]NAME[Check Led White On];
+CMD: set led on white;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: set led on white;
+Read from comport:set led on white
+
+Command SUCCESS
+
+Enter Command: ;
+Read Vim4: Clear: 25
+Red: 8
+Green: 9
+Blue: 8
+;
+-----------------------------------------;
+Spec Clear  : 10 ~ 100;
+Clear Test value: 25;
+Clear Test value OK;
+-----------------------------------------;
+Spec Red  : 5 ~ 30;
+Red Test value: 8;
+Red Test value OK;
+-----------------------------------------;
+Spec Green  : 5 ~ 30;
+Green Test value: 9;
+Green Test value OK;
+-----------------------------------------;
+Spec Blue  : 5 ~ 30;
+Blue Test value: 8;
+Blue Test value OK;
+Check led on White ok;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Item test time:0.638 s;
+ITEM=ID[16]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[17]NAME[Do bluetooth test];
+CMD: set bluetooth on;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: set bluetooth on;
+Read from comport:set bluetooth on
+
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: btc scan on;
+Read from comport:btc scan on
+
+Start child proc
+Waiting to connect to bluetoothd...
+[KAgent registered
+[K[[0;93mCHG[0m] Controller 34:5E:08:FF:8E:AB Pairable: yes
+[KAdvertisementMonitor path registered
+[KDiscovery started
+[K[[0;93mCHG[0m] Controller 34:5E:08:FF:8E:AB Discovering: yes
+
+Enter Command: [K[[0;92mNEW[0m] Device B8:2D:28:32:4F:27 Muffin
+[K[[0;92mNEW[0m] Device B8:2D:28:32:4F:83 Muffin
+[K[[0;92mNEW[0m] Device B8:2D:28:32:4F:4D Muffin
+;
+BTGoldenMac: B8:2D:28:32:4F:4D;
+Write to comport: btc scan off;
+Read from comport:btc scan off
+
+scan off
+[KDiscovery stopped
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D TxPower is nil
+;
+Write to comport: ;
+Read from comport:
+
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D RSSI is nil
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:83 TxPower is nil
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:83 RSSI is nil
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:27 TxPower is nil
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:27 RSSI is nil
+[K[[0;93mCHG[0m] Controller 34:5E:08:FF:8E:AB Discovering: no
+
+Enter Command: 
+Enter Command: ;
+Write to comport: btc pair B8:2D:28:32:4F:4D;
+Read from comport:btc pair B8:2D:28:32:4F:4D
+
+pair B8:2D:28:32:4F:4D
+Attempting to pair with B8:2D:28:32:4F:4D
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D Connected: yes
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D Bonded: yes
+
+Enter Command: [K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D Modalias: usb:v1D6Bp0246d0540
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D UUIDs: 0000110c-0000-1000-8000-00805f9b34fb
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D UUIDs: 0000110e-0000-1000-8000-00805f9b34fb
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D UUIDs: 00001200-0000-1000-8000-00805f9b34fb
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D UUIDs: 00001800-0000-1000-8000-00805f9b34fb
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D UUIDs: 00001801-0000-1000-8000-00805f9b34fb
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D UUIDs: 0000180a-0000-1000-8000-00805f9b34fb
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D ServicesResolved: yes
+[K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D Paired: yes
+[KPairing successful
+;
+BT pair Okay;
+Write to comport: btc remove B8:2D:28:32:4F:4D;
+Read from comport:btc remove B8:2D:28:32:4F:4D
+
+remove B8:2D:28:32:4F:4D
+
+Enter Command: [K[[0;93mCHG[0m] Device B8:2D:28:32:4F:4D ServicesResolved: no
+[KDevice has been removed
+;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: set bluetooth off;
+Read from comport:set bluetooth off
+
+Command SUCCESS
+
+Enter Command: [K[[0;93mCHG[0m] Controller 34:5E:08:FF:8E:AB Class: 0x00000000
+;
+Write to comport: ;
+Read from comport:
+
+[K[[0;93mCHG[0m] Controller 34:5E:08:FF:8E:AB Powered: no
+
+Enter Command: [K[[0;93mCHG[0m] Controller 34:5E:08:FF:8E:AB Discovering: no
+;
+Item test time:10.267 s;
+ITEM=ID[17]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[18]NAME[ Check Edid];
+CMD: EDID;
+Open COM6 PASS;
+Write to comport: EDID;
+Read from comport:EDID
+
+MUFFIN
+
+Enter Command: ;
+Get EDID: EDID
+
+MUFFIN
+
+Enter Command: ;
+SPEC: MUFFIN;
+Item test time:0.037 s;
+ITEM=ID[18]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[19]NAME[Check HDMI Video];
+CMD: play video test;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: play video test;
+Read from comport:play video test
+
+Video SHA1 Hash: f043322d64757fbe86860db5f1058865a57fd047
+Playing: test
+Press enter to stop video playback...
+;
+Read Vim4: Signal Ok
+FPS: 60
+H active: 3840
+V active: 2160
+;
+check signal ok;
+Read Vim4: Got 8 unique frames.
+Frame 0 found in known checksum list
+Frame 1 found in known checksum list
+Frame 2 found in known checksum list
+Frame 3 found in known checksum list
+Frame 4 found in known checksum list
+Frame 5 found in known checksum list
+Frame 6 found in known checksum list
+Frame 7 found in known checksum list
+Audio L ZCR: 272.879464
+Audio R ZCR: 308.035714
+Audio Signal - Good
+PASS
+;
+check av ok;
+Write to comport: ;
+Read from comport:
+
+Command SUCCESS
+
+Enter Command: ;
+check av and signal ok;
+Item test time:5.474 s;
+ITEM=ID[19]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[20]NAME[Do Arc Test];
+CMD: do arc test;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: do arc test;
+Read from comport:do arc test
+
+ARC Test in progress...
+Frequency was:  436.3636
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Item test time:0.279 s;
+ITEM=ID[20]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[21]NAME[ check cec_connection];
+CMD: check cec_connection;
+Open COM6 PASS;
+Write to comport: check cec_connection;
+Read from comport:check cec_connection
+
+OK
+
+Enter Command: ;
+Item test time:0.225 s;
+ITEM=ID[21]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[22]NAME[ Check temp];
+Open COM6 PASS;
+CMD: get temp;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: get temp;
+Read from comport:get temp
+
+Core Temperature: 31C
+
+Enter Command: ;
+get temp
+
+Core Temperature: 31C
+
+Enter Command: ;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Item test time:0.074 s;
+ITEM=ID[22]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[23]NAME[ Do burn product mark];
+Open COM6 PASS;
+CMD: do burn product mark;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: do burn product mark;
+Read from comport:do burn product mark
+
+Burning product mark...
+Product mark burned
+Command SUCCESS
+
+Enter Command: ;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Item test time:0.109 s;
+ITEM=ID[23]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[24]NAME[ do factory shopinit 1];
+CMD: do factory shopinit 1;
+Open COM6 PASS;
+Write to comport: ;
+Read from comport:
+
+
+Enter Command: ;
+Write to comport: do factory shopinit 1;
+Read from comport:do factory shopinit 1
+
+Command SUCCESS
+
+Enter Command: ;
+Item test time:0.811 s;
+ITEM=ID[24]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[25]NAME[ Fixture control];
+CMD: open;
+connect AutoTC ok;
+AutoTC to UI MSG: ok
+;
+Item test time:1.683 s;
+ITEM=ID[25]RESULT[PASS];
+------------------------------------------------------
+Total test time:52.720 s;
+LOG=MAINFOR[345E08FF8EAA,1,,1.2,BSFT02------,52.720,01/05/2025 09:27:24,345E08FF8EAA,,];
+LOG=CONTENT[01/05/2025,09:28:17,SFIS_ON,,F0000000,1,0,FAIL,,0,1.696,FAIL,3.923,PASS,16.043,JFF.06E00090A,,0,0.075,PASS,,0,0.037,PASS,,0,0.072,PASS,0.038,PASS,,0,0.036,FAIL,,0,0.378,PASS,,0,3.19,PASS,,0,3.344,PASS,,0,2.369,0_0_0_0,,,0,0.642,842_771_38_76,,,0,0.638,0_0_0_0,,,0,0.62,25_8_9_8,,,0,0.638,PASS,,0,10.267,EDID
+
+MUFFIN
+
+Enter Command: ,,0,0.037,FAIL,,0,5.474,PASS,,0,0.279,PASS,,0,0.225,31,,0,0.074,PASS,,0,0.109,PASS,0.811,FAIL,,0,1.683,];
+LOG=ERROR[];
+SFIS=SN[S1C3351TDMAA]WIFIMAC0[345E08FF8EAA]WIFIMAC1[]PNNAME[RU9026001061]RESULT[true];CONTROL=RESULT[true];
+save local log pass;
+333333333333333;
+Sending result to sfis...;
+Sfis response pass;

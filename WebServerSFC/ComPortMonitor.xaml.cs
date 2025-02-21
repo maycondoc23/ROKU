@@ -78,6 +78,22 @@ namespace WebServerSFC
 
             }
 
+            //string caminhoArquivo = @"C:\caminho\para\seu\arquivo.txt"; // Caminho do arquivo
+            //try
+            //{
+            //    // Lê todo o conteúdo do arquivo
+            //    string conteudo = File.ReadAllText(caminhoArquivo);
+
+            //    // Exibe o conteúdo do arquivo
+            //    Console.WriteLine(conteudo);
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine("Erro ao ler o arquivo: " + ex.Message);
+            //}
+
+            Productname_view.Content = MainWindow.productname;
+
             SizeChanged += (o, e) =>
             {
                 var r = SystemParameters.WorkArea;
@@ -404,36 +420,82 @@ namespace WebServerSFC
                     {
                         case "PT":
 
-                            using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            using ( var writelog = new WriteLog())
                             {
-                                regMessageAnalysis = sendPT_SFCATA.messageAnalysis(fileLog);
+                                writelog.WriteLogFile($"HOSTNAME {MainWindow.HostName}");
                             }
 
-                            break;
+                            if (MainWindow.productname.Trim().ToString() == "BAYSIDE")
+                            {
+
+                                using (SendPT_SFCATABAYSIDE sendPT_SFCATA = new SendPT_SFCATABAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendPT_SFCATA.messageAnalysis(fileLog);
+                                }
+                                break;
+
+                            }
+
+                            else 
+                            {
+
+                                using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendPT_SFCATA.messageAnalysis(fileLog);
+                                }
+                                break;
+
+                            }
+
                                 
                         case "CAL":
 
-                            using (SendPT_SFCATA sendPT_SFCATA = new SendPT_SFCATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            using (SendCAL_SFCDATA sendCAL_SFCATA = new SendCAL_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                             {
-                                regMessageAnalysis = sendPT_SFCATA.messageAnalysis(fileLog);
+                                regMessageAnalysis = sendCAL_SFCATA.messageAnalysis(fileLog);
                             }
 
                             break;
 
                         case "FT":
 
-                            using (SendFT_SFCDATA sendFT_SFCDATA = new SendFT_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            if (MainWindow.productname.Trim().ToString() == "BAYSIDE")
                             {
-                                regMessageAnalysis = sendFT_SFCDATA.messageAnalysis(fileLog);
+                                using (SendFT_SFCDATABAYSIDE sendFT_SFCDATA = new SendFT_SFCDATABAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendFT_SFCDATA.messageAnalysis(fileLog);
+                                }
                             }
 
+                            else
+                            {
+                                using (SendFT_SFCDATA sendFT_SFCDATA = new SendFT_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendFT_SFCDATA.messageAnalysis(fileLog);
+                                }
+
+                            }
                             break;
 
                         case "RC":
 
-                            using (SendRC_SFCDATA sendRC_SFCDATA = new SendRC_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            if (MainWindow.productname.Trim().ToString() == "BAYSIDE")
                             {
-                                regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
+
+                                using (SendRC_SFCDATABAYSIDE sendRC_SFCDATA = new SendRC_SFCDATABAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
+                                }
+
+                            }
+                            else
+                            {
+
+                                using (SendRC_SFCDATA sendRC_SFCDATA = new SendRC_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
+                                }
+
                             }
 
                             break;
@@ -490,6 +552,16 @@ namespace WebServerSFC
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        private void Productname_view_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Productname_view_Click_1(object sender, RoutedEventArgs e)
+        {
+
         }
 
         /*************************************************************************************************************************/

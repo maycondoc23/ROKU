@@ -26,27 +26,27 @@
     MaxWidth="400"
     materialDesign:HintAssist.Hint="User"
     IsEnabled="{Binding Path=IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}"
-                 Margin="305,143,277,0" FontSize="16"  Height="64" TextAlignment="Center" Visibility="Hidden" KeyDown="txtUser_KeyDown"/>
+                 Margin="305,143,277,0" FontSize="16"  Height="64" TextAlignment="Center" KeyDown="txtUser_KeyDown"/>
         <PasswordBox x:Name="txtPassWord"
     Style="{StaticResource MaterialDesignFilledPasswordBox}"
     VerticalAlignment="Top"
     IsEnabled="{Binding Path=IsChecked, ElementName=MaterialDesignFilledPasswordFieldPasswordBoxEnabledComboBox}"
-    materialDesign:HintAssist.Hint="Password" Height="64" Margin="305,214,278,0" FontSize="16" KeyDown="txtPassWord_KeyDown" Visibility="Hidden"/>
+    materialDesign:HintAssist.Hint="Password" Height="64" Margin="305,214,278,0" FontSize="16" KeyDown="txtPassWord_KeyDown"/>
         <CheckBox Name="chkOffline"
   IsChecked="False"
   Content="Offline"
   materialDesign:CheckBoxAssist.CheckBoxSize="50" FontSize="30" 
-  Style="{StaticResource MaterialDesignDarkCheckBox}" Margin="388,327,360,0" Height="42" VerticalAlignment="Top" Checked="chkOffline_Checked" Click="chkOffline_Click" Visibility="Hidden"/>
+  Style="{StaticResource MaterialDesignDarkCheckBox}" Margin="470,283,278,0" Height="42" VerticalAlignment="Top" Checked="chkOffline_Checked" Click="chkOffline_Click"/>
         <CheckBox Name="chkOnline"                
   IsChecked="True"
   Content="Online"
   materialDesign:CheckBoxAssist.CheckBoxSize="50" FontSize="30" 
-  Style="{StaticResource MaterialDesignDarkCheckBox}" Margin="388,282,360,0" Height="42" VerticalAlignment="Top" Checked="chkOnline_Checked" Click="chkOnline_Click" Visibility="Hidden" />
+  Style="{StaticResource MaterialDesignDarkCheckBox}" Margin="305,283,443,0" Height="42" VerticalAlignment="Top" Checked="chkOnline_Checked" Click="chkOnline_Click" />
         <Button x:Name="btLogin"
     Style="{StaticResource MaterialDesignRaisedButton}"
     Height="58"
     materialDesign:ButtonAssist.CornerRadius="10"
-    ToolTip="MaterialDesignRaisedButton with Round Corners" Margin="305,374,278,0" VerticalAlignment="Top" Click="btLogin_Click" Visibility="Hidden">
+    ToolTip="MaterialDesignRaisedButton with Round Corners" Margin="305,374,278,0" VerticalAlignment="Top" Click="btLogin_Click">
             <TextBlock
       Text="Login" FontSize="30" />
         </Button>
@@ -61,5 +61,10 @@
             FontSize="46"
             Text="SENTINELA ROKU"
             TextAlignment="Center" Height="54" VerticalAlignment="Bottom" Margin="10,0,10,409"/>
+        <ComboBox x:Name="Produto" HorizontalAlignment="Left" Margin="305,330,0,0" VerticalAlignment="Top" Width="331" Height="34" AllowDrop="True" Text="PRODUCT" IsSynchronizedWithCurrentItem="False" Background="{Binding ElementName=button, Mode=OneWay}" SelectedIndex="0" FontSize="24" SelectionChanged="PRODUCTNAME_SelectionChanged_1" Cursor="Hand" ForceCursor="True">
+            <ComboBoxItem Content="ROCKET / BAILEY"/>
+            <ComboBoxItem Content="LAKEPORT"/>
+            <ComboBoxItem Content="BAYSIDE"/>
+        </ComboBox>
     </Grid>
 </Window>

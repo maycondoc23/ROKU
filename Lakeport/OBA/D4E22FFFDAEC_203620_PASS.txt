@@ -1,0 +1,160 @@
+------------------------------------------------------
+ITEM=ID[1]NAME[Check QR code hosing ];
+MO:2144011879;
+MO need check housing:2144011879;
+MO need check housing:2144011884;
+MO need check housing:2144011887;
+MO need check housing:2144011890;
+QR code Housing: 0056;
+Item test time:3.026 s;
+ITEM=ID[1]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[2]NAME[Check Question QR code];
+Item test time:21.881 s;
+ITEM=ID[2]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[3]NAME[Check SN + FW + MAC];
+Connect to HDMI server;
+capture bmp ok;
+Read ;
+SN: S1GH35156J4N;
+FW: JWF.06E00088A;
+WIFI MAC: D4E22FFFDAEC;
+SFIS ;
+SN: S1GH35156J4N;
+FW: JWF.06E00088A;
+WIFI MAC: D4E22FFFDAEC;
+Check SN Pass;
+Check FW Pass;
+Check Wifi Mac Pass;
+Scan QR code success;
+Item test time:2.773 s;
+ITEM=ID[3]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[4]NAME[Check  question];
+Item test time:36.026 s;
+ITEM=ID[4]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[5]NAME[Check Image Model number];
+CMD: 981,300,84,30;
+send to server: ROKU_BMP
+;
+Result: 0.92;
+Item test time:1.678 s;
+ITEM=ID[5]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[6]NAME[Check Out of box audit];
+CMD: 1753,62,75,38;
+send to server: ROKU_BMP
+;
+Result: 0.99;
+Item test time:1.663 s;
+ITEM=ID[6]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[7]NAME[ Save picture ];
+capture bmp ok;
+Item test time:1.414 s;
+ITEM=ID[7]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[8]NAME[ Press Reset Button];
+Connect to HDMI server;
+send to server: ROKU_BMP
+;
+Receive: result=0.8618;
+send to server: ROKU_BMP
+;
+Receive: result=0.8618;
+send to server: ROKU_BMP
+;
+Receive: result=0.0122;
+send to server: ROKU_BMP
+;
+Receive: result=0.7422;
+send to server: ROKU_BMP
+;
+Receive: result=0.7373;
+send to server: ROKU_BMP
+;
+Receive: result=0.7410;
+send to server: ROKU_BMP
+;
+Receive: result=0.7443;
+send to server: ROKU_BMP
+;
+Receive: result=0.7377;
+send to server: ROKU_BMP
+;
+Receive: result=0.7411;
+send to server: ROKU_BMP
+;
+Receive: result=-1.#IND;
+java.lang.NumberFormatException: For input string: "-1.#IND";
+send to server: ROKU_BMP
+;
+Receive: result=0.5869;
+send to server: ROKU_BMP
+;
+Receive: result=0.9602;
+Item test time:23.111 s;
+ITEM=ID[8]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[9]NAME[Check Reset Remote];
+Spec: Transmitting EnablePairing IR code;
+Open comport pass;
+Read from comport:[39m[001.053136][rcu.app.ctor] Beginning (APP mode) localver: main.9999, build ver: mfg.00092[39m
+[39m[001.056338][rcu.app.ble] Starting BLE[39m
+[39m[001.058995][rcu.ble.wrap.ble.wrap] StartBle[39m
+[39m[001.167477][rcu.ble.wrap.create.pair.settings] Unable to get rcu_paired so creating...[39m
+[39m[001.192953][rcu.ble.wrap.peer.mac] D4:E2:2F:FF:DA:ED[39m
+[39m[001.215479][bl70x.sdk.flash.isevb] 0[39m
+[39m[001.218613][bl70x.ble.controller.new.board] dvt4[39m
+[39m[001.222281][dev.efuse.get.handle] [39m
+[39m[001.227618][bl70x.ble.controller.bl70x.ble.controller.mac] 9C:F1:D4:00:29:F7[39m
+[39m[001.238953][bl70x.sdk.irq.pending_clear] irq#: 72[39m
+[39m[001.241949][bl70x.sdk.irq.register] irq#: 72[39m
+[39m[001.245238][bl70x.ble.controller.register.callbacks] ![39m
+[39m[001.322961][bl70x.drv.keyinput.start.notification] start[39m
+[39m[001.340305][bl70x.ble.controller.hci.send.cmd] opcode:0xC03, param_len:0[39m
+[39m[001.349859][bl70x.sdk.irq.register] irq#: 3[39m
+[39m[001.556323][bl70x.ble.controller.hci.send.cmd] opcode:0x1001, param_len:0[39m
+[39m[001.566986][bl70x.ble.controller.hci.send.cmd] opcode:0x1003, param_len:0[39m
+[39m[001.577653][bl70x.ble.controller.hci.send.cmd] opcode:0xC01, param_len:8[39m
+[39m[001.588575][bl70x.ble.controller.hci.send.cmd] opcode:0xC63, param_len:8[39m
+[39m[001.599338][bl70x.ble.controller.hci.send.cmd] opcode:0x2001, param_len:8[39m
+[39m[001.610398][bl70x.ble.controller.hci.send.cmd] opcode:0x2002, param_len:0[39m
+[39m[001.621317][bl70x.ble.controller.hci.send.cmd] opcode:0x2003, param_len:0[39m
+[39m[001.632310][bl70x.ble.controller.hci.send.cmd] opcode:0x1009, param_len:0[39m
+[39m[001.643306][bl70x.ble.controller.hci.send.cmd] opcode:0x202D, param_len:1[39m
+[39m[001.656303][bl70x.ble.controller.hci.send.cmd] opcode:0x2029, param_len:0[39m
+[39m[001.667151][bl70x.ble.controller.hci.send.cmd] opcode:0x202D, param_len:1[39m
+[39m[001.678621][bl70x.ble.controller.hci.send.cmd] opcode:0x200A, param_len:1[39m
+[39m[001.689852][bl70x.ble.controller.hci.send.cmd] opcode:0x2027, param_len:39[39m
+[39m[001.701397][bl70x.ble.controller.hci.send.cmd] opcode:0x204E, param_len:8[39m
+[39m[001.718279][rcu.ble.wrap.on.dev.evt] event: 1[39m
+[39m[001.721310][rcu.app.ble.event.system.started] System Startup[39m
+[39m[001.742467][rcu.app.pairing.initiated] Pairing Initiated[39m
+[39m[001.763404][rcu.app.pairing.start] [39m
+[39m[001.766093][rcu.app.tep.xmit] Transmitting EnablePairing IR code[39m
+[39m[001.769228][bl70x.drv.ir.xmit.nec] Transmitting NEC payload: 0xc4ea/0x39 (0xc639c4ea)[39m
+[39m[001.895359][com.drv.ble.no.adv.rsp] No resp advertise data supplied[39m
+[39m[001.900335][bl70x.ble.controller.hci.send.cmd] opcode:0x2008, param_len:32[39m
+[39m[001.913977][bl70x.ble.controller.hci.send.cmd] opcode:0x2006, param_len:15[39m
+[39m[001.925197][bl70x.ble.controller.hci.send.cmd] opcode:0x200A, param_len:1[39m
+[39m[001.939323][rcu.ble.wrap.adv] ble advertise[39m
+
+
+      ____          __             __  ______
+     / __ \ ____   / /__ __  ;
+REMOTE MAC: 9CF1D40029F7;
+Found SPEC:  Transmitting EnablePairing IR code;
+Reset Remote OK;
+Item test time:7.158 s;
+ITEM=ID[9]RESULT[PASS];
+------------------------------------------------------
+Total test time:98.736 s;
+LOG=MAINFOR[S1GH35156J4N,1,,1.2,OBA-08------,98.736,01/04/2025 20:34:41,D4E22FFFDAEC,0056,];
+LOG=CONTENT[01/04/2025,20:36:20,SFIS_ON,,F0000000,1,0,FAIL,3.026,PASS,21.881,FAIL,,0,2.773,PASS,36.026,PASS,,0,1.678,PASS,,0,1.663,FAIL,,0,1.414,FAIL,,,,,,,0,23.111,FAIL,,,,0,7.158,];
+LOG=ERROR[];
+SFIS=SN[S1GH35156J4N]WIFIMAC0[D4E22FFFDAEC]WIFIMAC1[0056]PNNAME[RU9026001120]RESULT[true];CONTROL=RESULT[true];
+Sending result to sfis...;
+Sfis response pass;

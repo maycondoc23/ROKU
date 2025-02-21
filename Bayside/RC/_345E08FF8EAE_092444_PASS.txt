@@ -1,0 +1,114 @@
+------------------------------------------------------
+ITEM=ID[1]NAME[ Fixture control];
+CMD: close;
+connect AutoTC ok;
+AutoTC to UI MSG: ready
+;
+Item test time:1.931 s;
+ITEM=ID[1]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[2]NAME[Check Build Image];
+CMD: check_language ;
+Read Vim4: Transmit key: l
+DONE
+;
+Read Vim4: FAIL
+;
+Read:FAIL
+;
+Read Vim4: Transmit key: l
+DONE
+;
+Read Vim4: PASS
+;
+Read:PASS
+;
+Item test time:21.058 s;
+ITEM=ID[2]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[3]NAME[ Check  Current];
+CMD: CONF:CURR:DC2,READ?,*UNREMOTE;
+Open comport pass;
+Write to comport: CONF:CURR:DC2
+;
+Write to comport: READ?;
+Read from comport:+0.18593848E+00
+;
+normal Result cnormal1: +0.18593848E+00;
+normal Result: 0.18593848;
+Write to comport: *UNREMOTE
+;
+Item test time:1.803 s;
+ITEM=ID[3]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[4]NAME[ Check SN + FW + MAC];
+Read Vim4: Transmit key: k
+Transmit key: h
+Transmit key: h
+Transmit key: h
+Transmit key: h
+Transmit key: h
+Transmit key: b
+Transmit key: b
+Transmit key: f
+Transmit key: f
+Transmit key: p
+DONE
+;
+Read Vim4: did=S1C33510KA6V,version=JFF.06E00090A,wifi_mac=34:5E:08:FF:8E:AE
+
+DONE
+;
+Read:;
+-SN: S1C33510KA6V;
+-FW: JFF.06E00090A;
+-WifiMac: 345E08FF8EAE;
+Sfis:;
+-SN: S1C33510KA6V;
+-FW: JFF.06E00090A;
+-WifiMac: 345E08FF8EAE;
+Check SN + FW + MAC PASS;
+Item test time:8.465 s;
+ITEM=ID[4]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[5]NAME[Check dut reboot image];
+CMD: AmbitServer.exe TestModel 1 5;
+Telnet: 192.168.1.101 port: 5555Pass;
+Open comport pass;
+Write to Telnet Vim4: check signal
+;
+Read from Telnet Vim4: 
+Enter Command: check signal
+Signal Ok
+FPS: 60
+H active: 1280
+V active: 720
+;
+Write to comport: reset1;
+Read from comport:reset1_ok
+;
+Write to Telnet Vim4: check signal
+;
+Read from Telnet Vim4: No Signal
+;
+check reset button PASS;
+Item test time:0.826 s;
+ITEM=ID[5]RESULT[PASS];
+------------------------------------------------------
+ITEM=ID[6]NAME[ Fixture control];
+CMD: open;
+connect AutoTC ok;
+AutoTC to UI MSG: ok
+;
+Item test time:1.642 s;
+ITEM=ID[6]RESULT[PASS];
+------------------------------------------------------
+Total test time:35.737 s;
+LOG=MAINFOR[345E08FF8EAE,1,,1.2,BSRC01------,35.737,01/05/2025 09:24:08,345E08FF8EAE,,];
+LOG=CONTENT[01/05/2025,09:24:44,SFIS_ON,,F0000000,1,0,FAIL,,0,1.931,FAIL,21.058,0.18593848,,0,1.803,FAIL,,0,8.465,FAIL,,0,0.826,FAIL,,0,1.642,];
+LOG=ERROR[];
+SFIS=SN[S1C33510KA6V]WIFIMAC0[345E08FF8EAE]WIFIMAC1[]PNNAME[RU9026001061]RESULT[true];CONTROL=RESULT[true];
+save local log pass;
+333333333333333;
+Sending result to sfis...;
+Sfis response pass;
