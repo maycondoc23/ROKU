@@ -54,7 +54,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 if (Receive.Contains("1>>")) //Consulta no WebService
                 {
-                    string message = Receive.Substring(3);
+                    string message = Receive.Substring(3).Trim();
 
                     string[] componetMessage = message.Split(',');
 
@@ -66,7 +66,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     {
                         string hostNameOld = HostNameTest;
 
-                        HostNameTest = HostNameTest.Replace("--", string.Empty);
+                        HostNameTest = HostNameTest.Replace("--", string.Empty).Trim();
 
                         string hostNameNew = HostNameTest;
 
@@ -180,8 +180,8 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     //Receive: 2 >> 20EFBDF5A3B2; CSN = S00R41913M8L,CESN = X00400Y13M8L,#PASS      
                     //Send: 2 >> SERIALNO = 20EFBDF5A3B2#OK,UNIT PASS!
 
-                    string message = Receive.Substring(3);
-                    message = message.Replace(';', ',');
+                    string message = Receive.Substring(3).Trim();
+                    message = message.Replace(';', ',').Trim();
                     string[] componetMessage = message.Split(',');
 
                     string SN = componetMessage[0];

@@ -53,7 +53,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 if (Receive.Contains("1>>")) //Consulta no WebService
                 {
-                    string message = Receive.Substring(3);
+                    string message = Receive.Substring(3).Trim();
 
                     string[] componetMessage = message.Split(',');
 
@@ -65,7 +65,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     {
                         string hostNameOld = HostNameTest;
 
-                        HostNameTest = HostNameTest.Replace("--", string.Empty);
+                        HostNameTest = HostNameTest.Replace("--", string.Empty).Trim();
 
                         string hostNameNew = HostNameTest;
 
@@ -176,9 +176,9 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                 }
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {
-                    string message = Receive.Substring(3);
+                    string message = Receive.Substring(3).Trim();
 
-                    message = message.Replace(';', ',');
+                    message = message.Replace(';', ',').Trim();
                     string[] componetMessage = message.Split(',');
 
                     string SN = componetMessage[0];

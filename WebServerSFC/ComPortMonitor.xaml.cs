@@ -428,9 +428,20 @@ namespace WebServerSFC
                             if (MainWindow.productname.Trim().ToString() == "BAYSIDE")
                             {
 
-                                using (SendPT_SFCATABAYSIDE sendPT_SFCATA = new SendPT_SFCATABAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                using (SendPT_SFCATABAYSIDE sendPT_SFCATABAYSIDE = new SendPT_SFCATABAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                                 {
-                                    regMessageAnalysis = sendPT_SFCATA.messageAnalysis(fileLog);
+                                    regMessageAnalysis = sendPT_SFCATABAYSIDE.messageAnalysis(fileLog);
+                                }
+                                break;
+
+                            }      
+                            
+                            else if (MainWindow.productname.Trim().ToString() == "LAKEPORT")
+                            {
+
+                                using (SendPT_SFCATA_LAKEPORT sendPT_SFCATA_LAKEPORT = new SendPT_SFCATA_LAKEPORT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendPT_SFCATA_LAKEPORT.messageAnalysis(fileLog);
                                 }
                                 break;
 
@@ -511,12 +522,36 @@ namespace WebServerSFC
 
                         case "AUTO_OBA":
 
-                            using (SendAUTO_OBA_SFCDATA sendAUTO_OBA_SFCDATA = new SendAUTO_OBA_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            if (MainWindow.productname.Trim().ToString() == "BAYSIDE")
                             {
-                                regMessageAnalysis = sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
+
+                                using (SendAUTO_OBA_SFCDATA_BAYSIDE sendAUTO_OBA_SFCDATA = new SendAUTO_OBA_SFCDATA_BAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
+                                }
+                                break;
                             }
 
-                            break;
+                            else if (MainWindow.productname.Trim().ToString() == "LAKEPORT")
+                            {
+
+                                using (SendAUTO_OBA_SFCDATA_LAKEPORT sendAUTO_OBA_SFCDATA = new SendAUTO_OBA_SFCDATA_LAKEPORT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
+                                }
+                                break;
+                            }
+
+                            else
+                            {
+                                using (SendAUTO_OBA_SFCDATA sendAUTO_OBA_SFCDATA = new SendAUTO_OBA_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendAUTO_OBA_SFCDATA.messageAnalysis(fileLog);
+                                }
+                                break;
+
+                            }
+
 
                         default:
                             MessageBox.Show($"Unidentified station {StationGroup}.", "Alert", MessageBoxButton.OK, MessageBoxImage.Warning);

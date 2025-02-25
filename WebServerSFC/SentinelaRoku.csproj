@@ -137,16 +137,20 @@
       <DependentUpon>AlertMessage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Entity\RegMessageAnalysis.cs" />
+    <Compile Include="SendClasses_SFCDATA\SendAUTO_OBA_SFCDATA_LAKEPORT.cs" />
     <Compile Include="SendClasses_SFCDATA\SendAUTO_OBA_SFCDATA_BAYSIDE.cs" />
     <Compile Include="SendClasses_SFCDATA\SendAUTO_OBA_SFCDATA.cs" />
     <Compile Include="SendClasses_SFCDATA\SendCAL_SFCDATA.cs" />
     <Compile Include="SendClasses_SFCDATA\SendFT_SFCDATA_LAKEPORT.cs" />
     <Compile Include="SendClasses_SFCDATA\SendFT_SFCDATABAYSIDE.cs" />
     <Compile Include="SendClasses_SFCDATA\SendFT_SFCDATA.cs" />
+    <Compile Include="SendClasses_SFCDATA\SendLASER_SFCDATA_LAKEPORT.cs" />
     <Compile Include="SendClasses_SFCDATA\SendLASER_SFCDATA_BAYSIDE.cs" />
     <Compile Include="SendClasses_SFCDATA\SendLASER_SFCDATA.cs" />
+    <Compile Include="SendClasses_SFCDATA\SendPT_SFCATA_LAKEPORT.cs" />
     <Compile Include="SendClasses_SFCDATA\SendPT_SFCATABAYSIDE.cs" />
     <Compile Include="SendClasses_SFCDATA\SendPT_SFCATA.cs" />
+    <Compile Include="SendClasses_SFCDATA\SendRC_SFCDATA_LAKEPORT.cs" />
     <Compile Include="SendClasses_SFCDATA\SendRC_SFCDATABAYSIDE.cs" />
     <Compile Include="SendClasses_SFCDATA\SendRC_SFCDATA.cs" />
     <Page Include="AlertMessage.xaml">

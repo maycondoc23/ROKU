@@ -239,7 +239,7 @@ namespace WebServerSFC
             {
                 try
                 {
-                    var res = webServices.SFIS_LOGIN(txtUser.Text, txtPassWord.Password, AppConfiguration.ProductLine, StationGroup, txtJiga.Text);
+                    var res = webServices.SFIS_LOGIN(txtUser.Text, txtPassWord.Password, AppConfiguration.ProductLine, StationGroup, txtJiga.Text.Trim());
                     if (res.StatusCode == "1")
                     {
                         using (var writeLog = new WriteLog())

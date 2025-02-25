@@ -14,7 +14,7 @@ using WebServerSFC.Classes;
 
 namespace SentinelaRoku.SendClasses_SFCDATA
 {
-    class SendFT_SFCDATABAYSIDE: IDisposable
+    class SendFT_SFCDATALAKEPORT: IDisposable
     {
         private DataTable tableErrorCode;
         private DataTable tableStation;
@@ -25,7 +25,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Construtor ---*/
-        public SendFT_SFCDATABAYSIDE(string id, string host, string group, DataTable stations, DataTable errorCodes)
+        public SendFT_SFCDATALAKEPORT(string id, string host, string group, DataTable stations, DataTable errorCodes)
         {
             operatorID = id;
             productLine = ConfigurationManager.AppSettings["PRODUCT_LINE"];
@@ -54,7 +54,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 if (Receive.Contains("1>>")) //Consulta no WebService
                 {
-                    string message = Receive.Substring(3);
+                    string message = Receive.Substring(3).Trim();
 
                     string[] componetMessage = message.Split(',');
 
@@ -66,7 +66,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     {
                         string hostNameOld = HostNameTest;
 
-                        HostNameTest = HostNameTest.Replace("--", string.Empty);
+                        HostNameTest = HostNameTest.Replace("--", string.Empty).Trim();
 
                         string hostNameNew = HostNameTest;
 
@@ -90,6 +90,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                             string BTMAC = string.Empty;
                             string FW = string.Empty;
+                            string FSS = string.Empty;
 
                             string CESN = string.Empty;
 
@@ -140,26 +141,31 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                                     {
                                         BTMAC = detail.Value;
                                     }
+
+                                    if (detail.Key == "FSS")
+                                    {
+                                        FSS = detail.Value;
+                                    }
                                 }
 
                                 if (resultGetData.StatusCode == "0") //check OK
                                 {
                                     regMessageAnalysis.resultTest = true;
 
-                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},BT={BTMAC},FW={FW},CSN={CSN},CESN={CESN},PNNAME={PN}#OK,UNIT STATUS IS VALID";
+                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},BT={BTMAC},CSN={CSN},CESN={CESN},FSS={FSS},FW={FW},PNNAME={PN}#OK,UNIT STATUS IS VALID";
                                 }
                                 else if (resultGetData.StatusCode == "1")   //check not OK
                                 {
                                     regMessageAnalysis.resultTest = false;
 
-                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},BT={BTMAC},FW={FW},CSN={CSN},CESN={CESN},PNNAME={PN}#{GetDataErrorMessage}";
+                                    regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},BT={BTMAC},CSN={CSN},CESN={CESN},FSS={FSS},FW={FW},PNNAME={PN}#{GetDataErrorMessage}";
                                 }
                             }
                             else
                             {
                                 regMessageAnalysis.resultTest = false;
 
-                                regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},BT={BTMAC},FW={FW},CSN={CSN},CESN={CESN},PNNAME={PN}#{statusMessage}";
+                                regMessageAnalysis.testAnswer = $"1>>SERIALNO={SN},BT={BTMAC},CSN={CSN},CESN={CESN},FSS={FSS},FW={FW},PNNAME={PN}#{statusMessage}";
 
                                 MessageBox.Show($"StatusCode: {resultCheckStatus.StatusCode} {Environment.NewLine} Message: {resultCheckStatus.ErrorMessage}", "Route Verification", MessageBoxButton.OK, MessageBoxImage.Exclamation);
 
@@ -190,18 +196,19 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                 }
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {
-                    string message = Receive.Substring(3);
+                    string message = Receive.Substring(3).Trim();
 
-                    message = message.Replace(';', ',');
+                    message = message.Replace(';', ',').Trim();
                     string[] componetMessage = message.Split(',');
 
                     string SN = componetMessage[0];
 
                     string BTMAC = componetMessage[1].Split('=')[1];
-                    string FW = componetMessage[2].Split('=')[1];
+                    string CSN = componetMessage[2].Split('=')[1];
+                    string CESN = componetMessage[3].Split('=')[1];
 
-                    string CSN = componetMessage[3].Split('=')[1];
-                    string CESN = componetMessage[4].Split('=')[1];
+                    string FSS = componetMessage[4].Split('=')[1];
+                    string FW = componetMessage[5].Split('=')[1];
                     string ResultTest = componetMessage[5].Split('#')[1];
 
                     if (ResultTest.Trim() == "PASS")
@@ -287,7 +294,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
         }
 
         /*************************************************************************************************************************/
-
+                                                                                                                                                                                            
 
         /*************************************************************************************************************************/
         /*--- Escreve o arquivo de resposta para o teste na pasta C:\SFCDATA_IN ---*/
@@ -336,7 +343,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Destructor ---*/
-        ~SendFT_SFCDATABAYSIDE()
+        ~SendFT_SFCDATALAKEPORT()
         {
             this.Dispose();
         }

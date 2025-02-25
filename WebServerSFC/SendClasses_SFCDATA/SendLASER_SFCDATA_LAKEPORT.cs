@@ -14,7 +14,7 @@ using WebServerSFC.Classes;
 
 namespace SentinelaRoku.SendClasses_SFCDATA
 {
-    class SendFT_SFCDATA: IDisposable
+    class SendLASER_SFCDATA_LAKEPORT: IDisposable
     {
         private DataTable tableErrorCode;
         private DataTable tableStation;
@@ -25,7 +25,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Construtor ---*/
-        public SendFT_SFCDATA(string id, string host, string group, DataTable stations, DataTable errorCodes)
+        public SendLASER_SFCDATA_LAKEPORT(string id, string host, string group, DataTable stations, DataTable errorCodes)
         {
             operatorID = id;
             productLine = ConfigurationManager.AppSettings["PRODUCT_LINE"];
@@ -72,7 +72,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                         using (var writeLog = new WriteLog())
                         {
-                            writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Passo 1 - Replace HostName: {hostNameOld}(Old) to {hostNameNew}(New)");
+                            writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> Replace HostName: {hostNameOld}(Old) to {hostNameNew}(New)");
                         }
                     }
 
@@ -90,7 +90,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                             string CESN = string.Empty;
 
                             /*--- Consulta no WebService ---*/
-                            var webservice = new WebServiceMethods();
+                            var webservice = new WebServiceMethods();  
 
                             var resultCheckStatus = webservice.SFIS_CHECK_STATUS(SN, GroupName);
 
@@ -101,7 +101,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                             /*--- Responde para o teste ---*/
                             if (resultCheckStatus.StatusCode == "0")
-                            {                             
+                            {
                                 var resultGetData = webservice.SFIS_GET_DATA(SN);
 
                                 using (var writeLog = new WriteLog())
@@ -126,6 +126,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                                     {
                                         CESN = detail.Value;
                                     }
+
                                 }
 
                                 if (resultGetData.StatusCode == "0") //check OK
@@ -176,8 +177,10 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                 }
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {
-                    string message = Receive.Substring(3).Trim();
+                    //Receive: 2 >> 20EFBDF5A3B2; CSN = S00R41913M8L,CESN = X00400Y13M8L,#PASS      
+                    //Send: 2 >> SERIALNO = 20EFBDF5A3B2#OK,UNIT PASS!
 
+                    string message = Receive.Substring(3).Trim();
                     message = message.Replace(';', ',').Trim();
                     string[] componetMessage = message.Split(',');
 
@@ -206,7 +209,6 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                         }
 
                         var resultLogout = webservice.SFIS_LOGOUT(SN, operatorID, productLine, groupName, hostName, "0");
-                                                
 
                         using (var writeLog = new WriteLog())
                         {
@@ -257,10 +259,9 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendFT_SFCDATA.cs Flag-1: {ex.Message}");
+                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendLASER_SFCDATA.cs Flag-1: {ex.Message}");
                 }
-
-                MessageBox.Show($"SendFT_SFCDATA.cs Flag-1: {ex.Message}", "SentinelaRoku ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendLASER_SFCDATA.cs Flag-1: {ex.Message}", "SentinelaRoku ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
             /*-----------------------------------------------------------------------------------------------------------------------*/
@@ -274,12 +275,9 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Escreve o arquivo de resposta para o teste na pasta C:\SFCDATA_IN ---*/
-        public List<object> SendMessageToTest(string sendMessage, string testStage)
+        public RegMessageAnalysis SendMessageToTest(string sendMessage, string testStage)
         {
-            List<object> resultList = new List<object>();
-
-            bool resultTest = false;
-            string resultMessage = string.Empty;
+            RegMessageAnalysis regMessageAnalysis = new RegMessageAnalysis();
 
 
             /*--- Constroi o arquivo de resposta e salva na pasta do teste ---*/
@@ -298,20 +296,17 @@ namespace SentinelaRoku.SendClasses_SFCDATA
             {
                 using (var writeLog = new WriteLog())
                 {
-                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendFT_SFCDATA.cs Flag-2: {ex.Message}");
+                    writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> SendLASER_SFCDATA.cs Flag-2: {ex.Message}");
                 }
 
-                MessageBox.Show($"SendFT_SFCDATA.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"SendLASER_SFCDATA_LAKEPORT.cs Flag-2: {ex.Message}", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
                 throw;
             }
 
             /*-----------------------------------------------------------------------------------------------------------------------*/
 
 
-            resultList.Add(resultTest);
-            resultList.Add(resultMessage);
-
-            return resultList;
+            return regMessageAnalysis;
         }
 
         /*************************************************************************************************************************/
@@ -319,12 +314,11 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
         /*--- Destructor ---*/
-        ~SendFT_SFCDATA()
+        ~SendLASER_SFCDATA_LAKEPORT()
         {
             this.Dispose();
         }
         /*************************************************************************************************************************/
-
 
         /*************************************************************************************************************************/
         /*--- Dispose ---*/
