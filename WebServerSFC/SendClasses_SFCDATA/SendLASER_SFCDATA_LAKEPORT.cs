@@ -112,7 +112,8 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                                 string GetDataErrorMessage = resultGetData.ErrorMessage;
 
-                                PN = resultGetData.Configuration.Sku;
+                                PN = "RU9026001130";
+                                //PN = resultGetData.Configuration.Sku;
                                 DeviceDetail[] details = resultGetData.Configuration.DeviceDetails;
 
                                 foreach (DeviceDetail detail in details)

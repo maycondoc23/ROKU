@@ -182,7 +182,10 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                 }
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {
-
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> recebido {Receive}");
+                    }
                     //Receive: 2 >> 345E08FF95A4; FW = JFF.06E00068A,CSN = S00R4199HAP9,CESN = X00400X9HAP9,#PASS   
                     //Send: 2 >> SERIALNO = 345E08FF95A4#OK,UNIT PASS!
 

@@ -465,7 +465,6 @@ namespace WebServerSFC
                             {
                                 regMessageAnalysis = sendCAL_SFCATA.messageAnalysis(fileLog);
                             }
-
                             break;
 
                         case "FT":
@@ -476,6 +475,16 @@ namespace WebServerSFC
                                 {
                                     regMessageAnalysis = sendFT_SFCDATA.messageAnalysis(fileLog);
                                 }
+                                break;
+                            }
+
+                            else if (MainWindow.productname.Trim().ToString() == "LAKEPORT")
+                            {
+                                using (SendFT_SFCDATALAKEPORT sendFT_SFCDATA = new SendFT_SFCDATALAKEPORT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendFT_SFCDATA.messageAnalysis(fileLog);
+                                }
+                                break;
                             }
 
                             else
@@ -484,21 +493,30 @@ namespace WebServerSFC
                                 {
                                     regMessageAnalysis = sendFT_SFCDATA.messageAnalysis(fileLog);
                                 }
-
+                                break;
                             }
-                            break;
 
                         case "RC":
 
                             if (MainWindow.productname.Trim().ToString() == "BAYSIDE")
                             {
-
                                 using (SendRC_SFCDATABAYSIDE sendRC_SFCDATA = new SendRC_SFCDATABAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
                                 {
                                     regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
                                 }
-
+                                break;
                             }
+
+                            else if (MainWindow.productname.Trim().ToString() == "LAKEPORT")
+                            {
+
+                                using (SendRC_SFCDATA_LAKEPORT sendRC_SFCDATA = new SendRC_SFCDATA_LAKEPORT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
+                                }
+                                break;
+                            }
+
                             else
                             {
 
@@ -506,19 +524,41 @@ namespace WebServerSFC
                                 {
                                     regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
                                 }
-
+                                break;
                             }
 
-                            break;
 
                         case "LASER":
 
-                            using (SendLASER_SFCDATA sendLASE_SFCDATAR = new SendLASER_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                            if (MainWindow.productname.Trim().ToString() == "BAYSIDE")
                             {
-                                regMessageAnalysis = sendLASE_SFCDATAR.messageAnalysis(fileLog);
+
+                                using (SendLASER_SFCDATA_BAYSIDE sendRC_SFCDATA = new SendLASER_SFCDATA_BAYSIDE(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
+                                }
+                                break;
+
+                            }
+                            else if (MainWindow.productname.Trim().ToString() == "LAKEPORT")
+                            {
+
+                                using (SendLASER_SFCDATA_LAKEPORT sendRC_SFCDATA = new SendLASER_SFCDATA_LAKEPORT(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendRC_SFCDATA.messageAnalysis(fileLog);
+                                }
+                                break;
+
+                            }
+                            else
+                            {
+                                using (SendLASER_SFCDATA sendLASE_SFCDATAR = new SendLASER_SFCDATA(MainWindow.OperatorId, MainWindow.HostName, StationGroup, tableStation_SFCDATA, tableErrorCode_SFCDATA))
+                                {
+                                    regMessageAnalysis = sendLASE_SFCDATAR.messageAnalysis(fileLog);
+                                }
+                                break;
                             }
 
-                            break;
 
                         case "AUTO_OBA":
 

@@ -26,12 +26,12 @@
     MaxWidth="400"
     materialDesign:HintAssist.Hint="User"
     IsEnabled="{Binding Path=IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}"
-                 Margin="305,143,277,0" FontSize="16"  Height="64" TextAlignment="Center" KeyDown="txtUser_KeyDown"/>
+                 Margin="305,143,277,0" FontSize="16"  Height="64" TextAlignment="Center" KeyDown="txtUser_KeyDown" Visibility="Hidden"/>
         <PasswordBox x:Name="txtPassWord"
     Style="{StaticResource MaterialDesignFilledPasswordBox}"
     VerticalAlignment="Top"
     IsEnabled="{Binding Path=IsChecked, ElementName=MaterialDesignFilledPasswordFieldPasswordBoxEnabledComboBox}"
-    materialDesign:HintAssist.Hint="Password" Height="64" Margin="305,214,278,0" FontSize="16" KeyDown="txtPassWord_KeyDown"/>
+    materialDesign:HintAssist.Hint="Password" Height="64" Margin="305,214,278,0" FontSize="16" KeyDown="txtPassWord_KeyDown" Visibility="Hidden"/>
         <CheckBox Name="chkOffline"
   IsChecked="False"
   Content="Offline"

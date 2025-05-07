@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -39,6 +40,22 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
         /*************************************************************************************************************************/
 
+        public static string BtMacClass(string macHex, int increment = 1)
+        {
+            if (macHex.Length != 12)
+                throw new ArgumentException("MAC deve conter 12 caracteres hexadecimais.");
+
+            // Converte de string hexadecimal para ulong
+            ulong macValue = ulong.Parse(macHex, NumberStyles.HexNumber);
+
+            // Incrementa
+            macValue += (ulong)increment;
+
+            // Converte de volta para string hexadecimal com 12 caracteres
+            return macValue.ToString("X12");
+        }
+
+
 
         /*************************************************************************************************************************/
         /*--- Analisa a mensagem recebida do teste e executa a ação correspondente ---*/
@@ -63,13 +80,18 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     string SN = componetMessage[0];
 
 
-                    char ultimoDigito = SN[SN.Length - 1];
-                    int novoUltimoDigito = (int)Char.GetNumericValue(ultimoDigito) + 1;
+                    //char ultimoDigito = SN[SN.Length - 1];
+                    //int novoUltimoDigito = (int)Char.GetNumericValue(ultimoDigito) + 1;
 
                     // Substituir o último dígito no serial
-                    string BTMAC = SN.Substring(0, SN.Length - 1) + novoUltimoDigito;
+                    //string BTMAC = SN.Substring(0, SN.Length - 1) + novoUltimoDigito;
 
+                    string BTMAC = BtMacClass(SN, 1);
 
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> BTMAC {BTMAC}");
+                    }
 
                     string HostNameTest = componetMessage[1];
                     string GroupNameTest = componetMessage[2];

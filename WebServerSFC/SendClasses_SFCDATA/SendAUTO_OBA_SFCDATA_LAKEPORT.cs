@@ -100,7 +100,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
 
                             /*--- Responde para o teste ---*/
-                            if (resultCheckStatus.StatusCode != "0")
+                            if (resultCheckStatus.StatusCode == "0")
                             {
                                 var resultGetData = webservice.SFIS_GET_DATA(SN);
 
@@ -112,7 +112,8 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                                 string GetDataErrorMessage = resultGetData.ErrorMessage;
 
-                                PN = resultGetData.Configuration.Sku;
+                                PN = "RU9026001130";
+                                //PN = resultGetData.Configuration.Sku;
                                 DeviceDetail[] details = resultGetData.Configuration.DeviceDetails;
 
                                 foreach (DeviceDetail detail in details)
@@ -185,7 +186,10 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                     //Receive: 2 >> 345E08FF95A4; FW = JFF.06E00068A,CSN = S00R4199HAP9,CESN = X00400X9HAP9,#PASS   
                     //Send: 2 >> SERIALNO = 345E08FF95A4#OK,UNIT PASS!
-
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> recebido {Receive}");
+                    }
 
                     string message = Receive.Substring(3).Trim();
 
@@ -196,7 +200,7 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                     string CSN = componetMessage[1].Split('=')[1];
                     string CESN = componetMessage[2].Split('=')[1];
                     string FW = componetMessage[3].Split('=')[1];
-                    string ResultTest = componetMessage[4].Split('#')[1];
+                    string ResultTest = componetMessage[4].TrimStart('#');
 
                     if (ResultTest == "PASS")
                     {

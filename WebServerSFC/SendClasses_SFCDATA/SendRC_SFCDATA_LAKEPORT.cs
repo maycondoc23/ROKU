@@ -117,7 +117,8 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                                 string GetDataErrorMessage = resultGetData.ErrorMessage;
 
-                                PN = resultGetData.Configuration.Sku;
+                                PN = "RU9026001130";
+                                //PN = resultGetData.Configuration.Sku;
                                 DeviceDetail[] details = resultGetData.Configuration.DeviceDetails;
 
                                 foreach (DeviceDetail detail in details)
@@ -195,19 +196,25 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                 else if (Receive.Contains("2>>")) //Logout no Webservice
                 {
                     string message = Receive.Substring(3).Trim();
+                    string BTMAC = string.Empty;
+                    string CSN = string.Empty;
+                    string CESN = string.Empty;
+                    string FSS = string.Empty;
+                    string FW = string.Empty;
+                    string ResultTest = string.Empty;
+
 
                     message = message.Replace(';', ',').Trim();
                     string[] componetMessage = message.Split(',');
 
                     string SN = componetMessage[0];
 
-                    string BTMAC = componetMessage[1].Split('=')[1];
-                    string CSN = componetMessage[2].Split('=')[1];
-                    string CESN = componetMessage[3].Split('=')[1];
-
-                    string FSS = componetMessage[4].Split('=')[1];
-                    string FW = componetMessage[5].Split('=')[1];
-                    string ResultTest = componetMessage[5].Split('#')[1];
+                    BTMAC = componetMessage[1].Split('=')[1];
+                    CSN = componetMessage[2].Split('=')[1];
+                    CESN = componetMessage[3].Split('=')[1];
+                    FSS = componetMessage[4].Split('=')[1];
+                    FW = componetMessage[5].Split('=')[1];
+                    ResultTest = componetMessage[6].TrimStart('#');
 
                     if (ResultTest.Trim() == "PASS")
                     {

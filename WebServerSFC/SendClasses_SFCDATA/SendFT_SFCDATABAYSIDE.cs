@@ -192,6 +192,12 @@ namespace SentinelaRoku.SendClasses_SFCDATA
                 {
                     string message = Receive.Substring(3).Trim();
 
+                    using (var writeLog = new WriteLog())
+                    {
+                        writeLog.WriteLogFile($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")} --> recebido {Receive}");
+                    }
+
+
                     message = message.Replace(';', ',').Trim();
                     string[] componetMessage = message.Split(',');
 
@@ -202,7 +208,8 @@ namespace SentinelaRoku.SendClasses_SFCDATA
 
                     string CSN = componetMessage[3].Split('=')[1];
                     string CESN = componetMessage[4].Split('=')[1];
-                    string ResultTest = componetMessage[5].Split('#')[1];
+                    string ResultTest = componetMessage[5].TrimStart('#');
+
 
                     if (ResultTest.Trim() == "PASS")
                     {
